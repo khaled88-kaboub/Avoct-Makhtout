@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f3f4f6;
+  direction: rtl; /* Texte arabe */
+}
+
+/* Navbar RTL */
+.navbar {
+  display: flex;
+  justify-content: flex-end; /* Commence à droite */
+  gap: 25px;
+  padding: 15px 20px;
+  background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.nav-link.active {
+  background-color: #facc15;
+  color: #1f2937;
+}
+
+/* Titre d'accueil */
+.home-title {
+  text-align: center;
+  margin-top: 80px;
+  font-size: 28px;
+  color: #1e3a8a;
+  font-weight: 600;
+}
+
+/* Responsive navbar RTL */
+@media (max-width: 600px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-end; /* toujours aligné à droite */
+    gap: 10px;
+  }
+}

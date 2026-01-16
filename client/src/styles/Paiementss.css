@@ -1,0 +1,216 @@
+/* Ajuster l'espace sous la navbar fixe */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+.paiements-page {
+  font-family: 'Poppins', sans-serif;
+  padding: 30px;
+  background-color: #f3f4f6;
+  min-height: 100vh;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.page-header h2 {
+  color: #1e3a8a;
+  font-weight: 600;
+}
+
+.btn-add {
+  padding: 10px 18px;
+  background-color: #1e3a8a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-add:hover {
+  background-color: #374ac0;
+}
+/* ===== MODAL OVERLAY ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* ===== MODAL BOX ===== */
+.modal-box {
+  background-color: #fff;
+  padding: 25px 30px;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 90%;
+  max-height: 80vh;        /* ✅ limite la hauteur */
+  overflow-y: auto;        /* ✅ scroll interne si besoin */
+  direction: rtl;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  position: relative;
+  
+}
+
+/* ===== MODAL TITLE ===== */
+.modal-box h4 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.4em;
+  color: #1e3a8a;
+  text-align: center;
+}
+
+/* ===== FORMULAIRE ===== */
+.formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  
+}
+
+.formulaire label {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.formulaire input,
+.formulaire select {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e0;
+  font-size: 1em;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.formulaire input:focus,
+.formulaire select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 5px rgba(59,130,246,0.5);
+}
+
+/* ===== MODAL ACTIONS ===== */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.modal-actions button {
+  padding: 8px 16px;
+  font-size: 0.95em;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.modal-actions button:first-child {
+  background-color: #f87171; /* rouge pour annuler */
+  color: #fff;
+}
+
+.modal-actions button:first-child:hover {
+  background-color: #ef4444;
+}
+
+.modal-actions button:last-child {
+  background-color: #2563eb; /* bleu pour sauvegarder */
+  color: #fff;
+}
+
+.modal-actions button:last-child:hover {
+  background-color: #1e40af;
+}
+
+/* ===== TABLE ===== */
+.paiements-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.paiements-table th,
+.paiements-table td {
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  text-align: right;
+}
+
+.paiements-table th {
+  background-color: #1e3a8a;
+  color: #fff;
+}
+
+.paiements-table td {
+  background-color: #f9fafb;
+}
+
+.actions button {
+  margin-left: 5px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.actions .edit {
+  color: #2563eb;
+}
+
+.actions .delete {
+  color: #ef4444;
+}
+
+.add-btn {
+  background-color: #10b981;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.add-btn:hover {
+  background-color: #059669;
+}
+
+/* ===== FILTERS BOX ===== */
+.filters-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.filters-box input,
+.filters-box select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e0;
+}
+
+.result-count {
+  font-weight: 600;
+  color: #1e3a8a;
+  margin-left: auto;
+}

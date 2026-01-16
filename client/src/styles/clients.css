@@ -1,0 +1,236 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+
+/* ================= ROOT ================= */
+#root {
+  width: 100%;
+ margin: 0;
+ height: 100%;
+}
+
+
+.clients-page {
+  padding: 30px;
+  font-family: "Poppins", sans-serif;
+  background-color: #f3f4f6;
+  min-height: 100vh;
+}
+
+/* ================= HEADER ================= */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.page-header h2 {
+  color: #1e3a8a;
+  font-weight: 600;
+}
+
+.btn-add {
+  background: #1e3a8a;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-add:hover {
+  background: #374ac0;
+}
+
+/* ================= CARDS ================= */
+.clients-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.client-card {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.2s;
+}
+
+.client-card:hover {
+  transform: translateY(-3px);
+}
+
+.client-card h3 {
+  margin: 0;
+  color: #1e3a8a;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.client-card p {
+  margin: 0;
+  font-size: 14px;
+  color: #374151;
+}
+
+/* ================= CARD ACTIONS ================= */
+.card-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-actions button {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.card-actions button:first-child {
+  background: #facc15;
+  color: #1f2937;
+}
+
+.card-actions button:last-child {
+  background: #ef4444;
+  color: white;
+}
+
+.card-actions button:hover {
+  opacity: 0.85;
+}
+
+/* ================= MODAL ================= */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+.modal-form {
+  grid-template-columns: 1fr;
+}
+.modal-box {
+  background: white;
+  width: min(94vw, 920px);
+  max-height: 90vh;
+  border-radius: 14px;
+  padding: 25px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+.modal-box h3 {
+  text-align: center;
+  color: #1e3a8a;
+  margin-bottom: 20px;
+}
+
+/* ================= MODAL FORM ================= */
+
+
+.modal-form input,
+.modal-form textarea {
+  padding: 5px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+}
+
+.modal-form textarea {
+  grid-column: 1 / -1;
+  resize: none;
+  
+}
+
+/* ================= MODAL ACTIONS ================= */
+.modal-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.btn-primary {
+  background: #1e3a8a;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: #374ac0;
+}
+
+.btn-cancel {
+  background: #e5e7eb;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ================= ANIMATION ================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 600px) {
+  .page-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .modal-form {
+    grid-template-columns: 1fr;
+  }
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    z-index: 9999;
+  }
+  
+  .modal-box {
+    background: #fff;
+    width: min(94vw, 920px);
+    max-height: 90vh;
+    border-radius: 14px;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+  
+  
+}

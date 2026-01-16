@@ -1,0 +1,199 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+
+/* ================= NAVBAR ================= */
+.navbar {
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  width: 100%;
+  z-index: 1000;
+  direction: rtl;
+
+  background: linear-gradient(
+    135deg,
+    rgba(30, 58, 138, 0.95),
+    rgba(59, 130, 246, 0.95)
+  );
+
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* ================= LOGO ================= */
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #facc15;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.logo-icon {
+  font-size: 22px;
+}
+
+.logo-text {
+  white-space: nowrap;
+}
+
+/* ================= LINKS DESKTOP ================= */
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f9fafb;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  right: 0;
+  width: 0;
+  height: 3px;
+  background: #facc15;
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+.arrow-icon {
+  font-size: 0.7rem;
+  transition: transform 0.3s;
+  color: #f9fafb;
+}
+/* ================= HAMBURGER ================= */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #fff;
+  cursor: pointer;
+}
+/* تنسيق العنصر الأب للقائمة المنسدلة */
+.nav-item-dropdown {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  color: #f9fafb;
+}
+
+.dropdown-trigger {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* القائمة المنسدلة في وضع Desktop */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(30, 58, 138, 0.95),
+    rgba(59, 130, 246, 0.95)
+  );
+  min-width: 160px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  z-index: 1000;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-item {
+  padding: 12px 16px;
+  color: white;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.dropdown-item:after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  right: 0;
+  width: 0;
+  height: 3px;
+  background: #facc15;
+  transition: width 0.3s ease;
+}
+
+/* ================= MOBILE ================= */
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+
+  .menu-toggle {
+    display: block;
+    font-size: 26px;
+    color: #fff;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .navbar-links {
+    position: fixed;
+    top: 64px;
+    right: 0;
+
+    width: 240px;
+    height: calc(100vh - 64px);
+
+    background: linear-gradient(
+      180deg,
+      rgba(30, 58, 138, 0.98),
+      rgba(59, 130, 246, 0.98)
+    );
+
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    gap: 18px;
+
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+
+    z-index: 1000;
+  }
+
+  /* MENU OUVERT */
+  .navbar-links.open {
+    transform: translateX(0);
+  }
+  
+
+  .dropdown-menu {
+    position: static; /* تصبح جزءاً من القائمة الطولية */
+    background-color: #2c3e50;
+    padding-right: 20px; /* إزاحة جهة اليمين لتبدو كفرعية */
+    box-shadow: none;
+  }
+}
+
+
+
+
+
