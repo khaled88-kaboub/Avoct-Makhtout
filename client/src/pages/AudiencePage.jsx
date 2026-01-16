@@ -84,10 +84,10 @@ export default function AudiencesPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editId) {
-      await axios.put(`${API_URL}/${editId}`, form);
+   if (editId) {
+      await axios.put(`${API_URL}/api/audiences/${editId}`, form);
     } else {
-      await axios.post(API_URL, form);
+      await axios.post(`${API_URL}/api/audiences`, form);
     }
     setShowModal(false);
     loadData();
