@@ -24,7 +24,9 @@ export default function TypeAffPage() {
   useEffect(() => {
     loadTypes();
   }, []);
-
+  useEffect(() => {
+    document.title = "أنواع القضايا ";
+  }, []);
   /* ================= HANDLERS ================= */
   const openAddModal = () => {
     setEditId(null);

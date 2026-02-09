@@ -61,7 +61,9 @@ export const getLastPaiements = async (req, res) => {
       .limit(5)
       .populate({
         path: "dossier",
-        populate: { path: "client", select: "nom prenom" }
+        populate: { 
+          path: "client", 
+          select: "noms" }
       });
 
     res.json(paiements);

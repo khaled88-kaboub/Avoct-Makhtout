@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { FaMoneyBillWave, FaTrash, FaEdit, FaPlus } from "react-icons/fa";
-import "../styles/paiementss.css";
+import "../styles/paiements.css";
 
 export default function PaiementsPage() {
   const [paiements, setPaiements] = useState([]);
@@ -27,7 +27,8 @@ export default function PaiementsPage() {
   /* ================= LOAD ================= */
   const loadPaiements = async () => {
     try {
-      const res = await axios.get(`${API_URL}/api/paiements`);
+      const res = await axios.get(`${API_URL}/api/paiements?sort=-datePaiement`);
+
       const data = Array.isArray(res.data) ? res.data : [];
       setPaiements(data);
       setFiltered(data);
@@ -56,9 +57,12 @@ export default function PaiementsPage() {
 
     if (filterClient) {
       data = data.filter(p =>
-        `${p.dossier?.client?.nom || ""} ${p.dossier?.client?.prenom || ""}`.includes(filterClient)
+        (p.dossier?.client?.noms || [])
+          .join(" ")
+          .includes(filterClient)
       );
     }
+    
 
     if (filterMode) {
       data = data.filter(p => p.modePaiement === filterMode);
@@ -75,7 +79,7 @@ export default function PaiementsPage() {
     if (!window.confirm("حذف هذا الدفع؟")) return;
     try {
       await axios.delete(`${API_URL}/api/paiements/${id}`);
-      loadPaiements();
+     await loadPaiements();
     } catch (err) {
       console.error("Erreur suppression paiement:", err);
       alert("Erreur lors de la suppression !");
@@ -124,27 +128,32 @@ export default function PaiementsPage() {
 
   const handleSave = async (paiement) => {
     if (!paiement.dossier || !paiement.montant) {
-      alert("الملف و المبلغ ضروريان!");
+      alert("الملف والمبلغ ضروريان!");
       return;
     }
-
+  
     const payload = {
       ...paiement,
       montant: Number(paiement.montant),
-      reste: Number(paiement.reste || 0),
+      // On ne retire pas forcément 'reste' ici, le backend le recalculera
+      datePaiement: new Date(paiement.datePaiement),
     };
-
+  
     try {
       if (paiement._id) {
         await axios.put(`${API_URL}/api/paiements/${paiement._id}`, payload);
       } else {
         await axios.post(`${API_URL}/api/paiements`, payload);
       }
-      loadPaiements();
+      
+      // IMPORTANT : Recharger les deux pour être sûr que les compteurs sont justes
+      await loadPaiements();
+      await loadDossiers(); 
+      
       closeModal();
     } catch (err) {
       console.error("Erreur sauvegarde paiement:", err);
-      alert("Erreur lors de la sauvegarde !");
+      alert("خطأ في حفظ البيانات");
     }
   };
 
@@ -190,7 +199,7 @@ export default function PaiementsPage() {
             <th>المبلغ</th>
             <th>طريقة الدفع</th>
             <th>التاريخ</th>
-            <th>المتبقي</th>
+            
             <th>إجراءات</th>
           </tr>
         </thead>
@@ -199,11 +208,12 @@ export default function PaiementsPage() {
             filtered.map(p => (
               <tr key={p._id}>
                 <td>{p.dossier?.titre || "-"}</td>
-                <td>{p.dossier?.client?.nom} {p.dossier?.client?.prenom}</td>
+                <td>{p.dossier?.client?.noms?.join(" ، ")}</td>
+
                 <td>{p.montant} دج</td>
                 <td>{p.modePaiement}</td>
                 <td>{new Date(p.datePaiement).toLocaleDateString("ar-DZ")}</td>
-                <td>{p.reste} دج</td>
+                
                 <td className="actions">
                   <button className="edit" onClick={() => openModal(p)}><FaEdit /></button>
                   <button className="delete" onClick={() => handleDelete(p._id)}><FaTrash /></button>
@@ -239,7 +249,8 @@ export default function PaiementsPage() {
                 <option value="">اختر الملف</option>
                 {dossiers.map(d => (
                   <option key={d._id} value={d._id}>
-                    {d.titre} - {d.client?.nom} {d.client?.prenom}
+                    {d.titre} - {d.client?.noms?.join(" ، ")}
+
                   </option>
                 ))}
               </select>
@@ -253,14 +264,14 @@ export default function PaiementsPage() {
                 }
               />
 
-              <label>المتبقي</label>
-              <input
-                type="number"
-                value={selectedPaiement.reste ?? ""}
-                onChange={(e) =>
-                  setSelectedPaiement({ ...selectedPaiement, reste: e.target.value })
-                }
-              />
+<label>المتبقي (يتم حسابه تلقائياً)</label>
+<input
+  type="number"
+  value={selectedPaiement.reste ?? ""}
+  readOnly // 👈 Empêche la modification manuelle
+  style={{ backgroundColor: '#f0f0f0', cursor: 'not-allowed' }}
+  placeholder="سيتم الحساب عند الحفظ"
+/>
 
               <label>طريقة الدفع</label>
               <select

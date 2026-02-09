@@ -4,6 +4,7 @@ import {
   FaFolderOpen,
   FaUsers,
   FaGavel,
+  FaUserTie,
   FaMoneyBillWave,
   FaRegCalendarCheck,
   FaCalendarAlt,
@@ -58,6 +59,14 @@ export default function Navbar() {
           <FaRegCalendarCheck />الرزنامة
         </NavLink>
 
+        <NavLink to="/inaba" className="nav-link" onClick={() => setOpen(false)}>
+          <FaUserTie />إنابة
+        </NavLink>
+
+        <NavLink to="/tassis" className="nav-link" onClick={() => setOpen(false)}>
+          <FaRegCalendarCheck />إعلان تأسيس
+        </NavLink>
+
         <NavLink to="/paiements" className="nav-link" onClick={() => setOpen(false)}>
           <FaMoneyBillWave />المدفوعات
         </NavLink>
@@ -75,8 +84,23 @@ export default function Navbar() {
               <NavLink to="/types" className="dropdown-item" onClick={closeAll}>
               أنواع القضايا
               </NavLink>
-              <NavLink to="/settings/system" className="dropdown-item" onClick={closeAll}>
+              <NavLink to="/settings/type-audiences" className="dropdown-item" onClick={closeAll}>
+              أنواع الجلسات
+              </NavLink>
+              <NavLink to="/settings/tribunaux" className="dropdown-item" onClick={closeAll}>
               إضافة محكمة
+              </NavLink>
+              <NavLink to="/settings/tribunaux-classes" className="dropdown-item" onClick={closeAll}>
+              أقسام المحكمة 
+              </NavLink>
+              <NavLink to="/settings/courts" className="dropdown-item" onClick={closeAll}>
+              إضافة مجلس قضائي  
+              </NavLink>
+              <NavLink to="/settings/courts-chambres" className="dropdown-item" onClick={closeAll}>
+              غرف المجلس القضائي  
+              </NavLink>
+              <NavLink to="/settings/etat-clients" className="dropdown-item" onClick={closeAll}>
+              وصف للعميل    
               </NavLink>
             </div>
           )}

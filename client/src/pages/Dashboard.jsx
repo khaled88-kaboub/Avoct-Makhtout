@@ -95,7 +95,7 @@ export default function Dashboard() {
             {paiements.map(p => (
               <li key={p._id}>
                 <span>
-                  {p.dossier?.client?.nom} {p.dossier?.client?.prenom}
+                  {p.dossier?.client?.noms.join(" ، ")} 
                 </span>
                 <small>{p.montant} دج</small>
               </li>

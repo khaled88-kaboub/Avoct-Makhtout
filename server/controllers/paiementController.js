@@ -1,10 +1,35 @@
 import Paiement from "../models/Paiement.js";
 import PDFDocument from "pdfkit";
+import Dossier from "../models/Dossier.js"; // 👈 Importez le modèle Dossier
 
-/* ================= CREATE ================= */
+
+
+/* ================= CREATE  ================= */
 export const createPaiement = async (req, res) => {
   try {
-    const paiement = await Paiement.create(req.body);
+    const { dossier: dossierId, montant } = req.body;
+
+    // 1. Récupérer le dossier avec ses paiements actuels pour faire le calcul
+    const dossier = await Dossier.findById(dossierId).populate("paiements");
+    if (!dossier) return res.status(404).json({ message: "الملف غير موجود" });
+
+    // 2. Calculer le total déjà payé (avant ce nouveau paiement)
+    const totalDejaPaye = dossier.paiements.reduce((sum, p) => sum + p.montant, 0);
+
+    // 3. Calculer le nouveau reste : Prix Dossier - (Ancien Total + Nouveau Montant)
+    const nouveauReste = dossier.price - (totalDejaPaye + montant);
+
+    // 4. Créer le paiement avec le reste calculé
+    const paiement = await Paiement.create({
+      ...req.body,
+      reste: nouveauReste
+    });
+
+    // 5. Mettre à jour le tableau du dossier
+    await Dossier.findByIdAndUpdate(dossierId, {
+      $push: { paiements: paiement._id }
+    });
+
     res.status(201).json(paiement);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -19,7 +44,7 @@ export const getPaiements = async (req, res) => {
         path: "dossier",
         populate: {
           path: "client",
-          select: "nom prenom"
+          select: "noms"
         }
       })
       .sort({ datePaiement: -1 });
@@ -38,7 +63,7 @@ export const getPaiementById = async (req, res) => {
         path: "dossier",
         populate: {
           path: "client",
-          select: "nom prenom"
+          select: "noms"
         }
       });
 
@@ -72,13 +97,22 @@ export const updatePaiement = async (req, res) => {
 };
 
 /* ================= DELETE ================= */
+/* ================= DELETE ================= */
 export const deletePaiement = async (req, res) => {
   try {
-    const paiement = await Paiement.findByIdAndDelete(req.params.id);
+    const paiementId = req.params.id;
+    
+    // 1. Trouver le paiement pour connaître son dossier avant de le supprimer
+    const paiement = await Paiement.findById(paiementId);
+    if (!paiement) return res.status(404).json({ message: "الدفع غير موجود" });
 
-    if (!paiement) {
-      return res.status(404).json({ message: "الدفع غير موجود" });
-    }
+    // 2. Supprimer le paiement
+    await Paiement.findByIdAndDelete(paiementId);
+
+    // 3. Retirer la référence du dossier
+    await Dossier.findByIdAndUpdate(paiement.dossier, {
+      $pull: { paiements: paiementId }
+    });
 
     res.json({ message: "تم حذف الدفع بنجاح" });
   } catch (err) {
@@ -139,6 +173,8 @@ const rtl = (text) => {
     return text;
   }
 };
+// Chemin vers votre logo (assurez-vous que le dossier 'assets' existe)
+const logoPath = path.join(process.cwd(), "assets", "ero.jpg");
 
 export const generatePaiementPdf = async (req, res) => {
   try {
@@ -146,7 +182,7 @@ export const generatePaiementPdf = async (req, res) => {
       path: "dossier",
       populate: {
         path: "client",
-        select: "nom prenom",
+        select: "noms",
       },
     });
 
@@ -173,20 +209,57 @@ export const generatePaiementPdf = async (req, res) => {
     // 4. الآن نربط الوثيقة بالاستجابة
     doc.pipe(res);
     doc.font(fontPath);
+// --- AJOUT DU LOGO ICI ---
+
+if (fs.existsSync(logoPath)) {
+  console.log("✅ Logo trouvé, tentative d'insertion...");
+  try {
+      // 1. On force l'insertion de l'image
+      // On utilise 'fit' au lieu de 'width' pour plus de stabilité
+      doc.image(logoPath, 70, 60, { fit: [120, 120] }, { align: "right" });
+
+      doc.fontSize(8).text(" Agrément//N°=ح.ن/ب.م/25/0253", { align: "right" });
+      
+      doc.moveDown(0.2);
+      doc.fontSize(8).text(rtl(" CCP // 00799999000472134805"), { align: "right" });
+      doc.moveDown(0.2);
+      doc.fontSize(8).text(rtl(" ART//  16193744057 "), { align: "right" });
+      doc.moveDown(0.2);
+      doc.fontSize(8).text(rtl("Matricule fiscal // 178161701285138"), { align: "right" });
+      doc.moveDown(0.2);
+      doc.fontSize(8).text(rtl("RIP// 00300606000087130020 "), { align: "right" });
+      doc.moveDown(2.5);
+      // 2. TRÈS IMPORTANT : Déplacer le curseur Y 
+      // Si tu ne le fais pas, le texte suivant va s'écrire PAR-DESSUS le logo
+      doc.y = 130; 
+      
+      console.log("🚀 Image insérée avec succès dans le flux PDF");
+  } catch (imgError) {
+      console.error("❌ Erreur PDFKit lors de l'insertion de l'image:", imgError);
+      doc.y = 50; // On revient à une position normale en cas d'échec
+  }
+} else {
+  console.log("⚠️ Logo non trouvé à l'emplacement:", logoPath);
+  doc.y = 120;
+}
+
 
    /* ================= المحتوى المصحح ================= */
 // 1. العنوان (كلمتين)
+doc.moveDown(4);
 doc.fontSize(20).text(rtl("دفع وصل "), { align: "center" });
 doc.moveDown(2);
 
 // استخدام Regex مع العلم 'g' لاستبدال كل المسافات
-const nomClean = paiement.dossier.client.nom.trim().replace(/\s+/g, '_');
-const prenomClean = paiement.dossier.client.prenom.trim().replace(/\s+/g, '_');
+const nomClean = Array.isArray(paiement.dossier.client.noms) 
+    ? paiement.dossier.client.noms.join(" -- ").trim() 
+    : (paiement.dossier.client.noms || "").trim();
+
 const titrClean = paiement.dossier.titre.trim().replace(/\s+/g, '_');
 const paiementClean = paiement.modePaiement.trim().replace(/\s+/g, '_');
 
 
-const clientName = `${nomClean}-${prenomClean}`;
+const clientName = `${nomClean}`;
 const dateStr = new Date(paiement.datePaiement).toLocaleDateString("ar-DZ");
 
 doc.fontSize(14);
@@ -195,31 +268,33 @@ doc.fontSize(14);
 doc.text(`${clientName} : ${rtl(" العميل اسم ")}`, { align: "right" });
 doc.moveDown(0.5);
 
-doc.text(`${titrClean} : ${rtl(" الملف")}`, { align: "right" });
+doc.text(`${titrClean} : ${rtl("الملف  ")}`, { align: "right" });
 doc.moveDown(0.5);
 
-doc.text(`${dateStr} : ${rtl("الدفع تاريخ ")}`, { align: "right" });
+doc.text(`${dateStr} : ${rtl("الدفع تاريخ  ")}`, { align: "right" });
 doc.moveDown(0.5);
 
-doc.text(`${paiementClean} : ${rtl("الدفع طريقة ")}`, { align: "right" });
+doc.text(`${paiementClean} : ${rtl("الدفع طريقة  ")}`, { align: "right" });
 doc.moveDown(1);
 
 /* ================= المبلغ ================= */
 // هنا نعالج كلمة "المبلغ المدفوع" و "دج" بـ rtl، ونترك الرقم في الوسط
 doc.fontSize(16).text(
-  `${rtl("دج")} ${paiement.montant} : ${rtl(" المدفوع المبلغ ")}`, 
+  `${rtl("دج")} ${paiement.montant} : ${rtl(" المدفوع المبلغ  ")}`, 
   { align: "right" }
 );
 doc.moveDown(1);
+doc.fillColor("red")
 doc.fontSize(16).text(
-  `${rtl("دج")} ${paiement.reste} : ${rtl(" المتبقي المبلغ ")}`, 
+  `${rtl("دج")} ${paiement.reste} : ${rtl(" المتبقي المبلغ   ")}`, 
   { align: "right" }
 );
+doc.fillColor("black")
 doc.moveDown(3);
 
 /* ================= التوقيع ================= */
 doc.text(rtl("المحامي توقيع "), { align: "left" });
-doc.text("__________________", { align: "left" });
+
 
     // 5. الإنهاء
     doc.end();

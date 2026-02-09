@@ -11,7 +11,14 @@ import AudienceCalendar from "./pages/AudienceCalendar";
 import Dashboard from "./pages/Dashboard";
 import PaiementsPage from "./pages/PaiementPage";
 import AboutPage from "./pages/AboutPage";
-
+import AdminCourtsPage from "./pages/AdminCourtsPage";
+import AdminTribunalsPage from "./pages/AdminTribunalPage";
+import AdminChambresPage from "./pages/AdminChambrePage";
+import AdminClassesPage from "./pages/AdminClassePage";
+import AdminTypeAudiencesPage from "./pages/AdminTypeAudiencePage";
+import AdminEtatClientsPage from "./pages/AdminEtatClientPage";
+import DelegationPage from "./pages/DelegationPage";
+import TassisPage from "./pages/TassisPage";
 export default function App() {
   return (
     <Router>
@@ -27,6 +34,15 @@ export default function App() {
           <Route path="/odiences/calendar" element={<AudienceCalendar />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/settings/courts" element={<AdminCourtsPage />} />
+          <Route path="/settings/tribunaux" element={<AdminTribunalsPage />} />
+          <Route path="/settings/courts-chambres" element={<AdminChambresPage />} />
+          <Route path="/settings/tribunaux-classes" element={<AdminClassesPage />} />
+          <Route path="/settings/type-audiences" element={<AdminTypeAudiencesPage />} />
+          <Route path="/settings/etat-clients" element={<AdminEtatClientsPage />} />
+          <Route path="/inaba" element={<DelegationPage />} />
+          <Route path="/tassis" element={<TassisPage />} />
+     
         </Routes>
       </div>
     </Router>

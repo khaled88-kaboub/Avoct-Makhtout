@@ -33,14 +33,15 @@ export default function AudienceCalendar() {
 
   /* تحويل audiences إلى events */
   const events = Array.isArray(audiences)
-  ? audiences.map(a => ({
+  ? audiences.map((a) => ({
       id: a._id,
-      title: `${a.dossier?.titre} - ${a.dossier?.client?.nom || ""} ${a.dossier?.client?.prenom || ""}`,
-      start: a.dateAudience,
+      title: `${a.dossier?.tribunal?.nom || ""}\n${a.dossier?.court?.nom || "" }\n${a.typeAudience?.nom || "" }`,
+      start: a.dateAudience, // ✅ فيه التاريخ + الساعة
       backgroundColor: getColorByStatus(a.statut),
-      extendedProps: a // ⭐ هنا الحل
+      extendedProps: a, // مهم جدًا
     }))
   : [];
+
 
 
 
@@ -55,66 +56,108 @@ export default function AudienceCalendar() {
       <h2>📅 رزنامة الجلسات</h2>
 
       <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView="dayGridMonth"
-        locale="ar"
-        headerToolbar={{
-          right: "prev,next today",
-          center: "title",
-          left: "dayGridMonth,timeGridWeek,timeGridDay"
-        }}
-        events={events}
-        eventClick={handleEventClick}
-        height="auto"
-      />
+  plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+  initialView="dayGridMonth"
+  locale="ar"
+  headerToolbar={{
+    right: "prev,next today",
+    center: "title",
+    left: "dayGridMonth,timeGridWeek,timeGridDay",
+  }}
+  events={events}
+  eventClick={handleEventClick}
+  eventTimeFormat={{
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }}
+  height="auto"
+/>
+
       {showModal && selectedAudience && (
   <div className="modal-overlay">
     <div className="modal-box">
       <h3>📌 تفاصيل الجلسة</h3>
 
-      <p><strong>📁 الملف:</strong> {selectedAudience.dossier?.titre}</p>
+      <p>
+        <strong>📁 الملف:</strong> {selectedAudience.dossier?.titre}
+      </p>
 
       <p>
         <strong>👤 العميل:</strong>{" "}
-        {selectedAudience.dossier?.client?.nom}{" "}
-        {selectedAudience.dossier?.client?.prenom}
+        {selectedAudience.dossier?.client?.noms?.join(" ، ")}
       </p>
 
-      <p><strong>🏛️ المحكمة:</strong> {selectedAudience.tribunal || "-"}</p>
-      <p><strong>🚪 القاعة:</strong> {selectedAudience.salle || "-"}</p>
+      {/* المحكمة / المجلس */}
+      {selectedAudience.dossier?.juridictionType === "tribunal" && (
+        <p>
+          <strong>⚖️ المحكمة:</strong>{" "}
+          {selectedAudience.dossier?.tribunal?.nom}
+        </p>
+      )}
+
+      {selectedAudience.dossier?.juridictionType === "court" && (
+        <p>
+          <strong>⚖️ المجلس:</strong>{" "}
+          ({String(
+            selectedAudience.dossier?.court?.wilayaNumber
+          ).padStart(2, "0")}){" "}
+          {selectedAudience.dossier?.court?.nom}
+        </p>
+      )}
+
+      <p>
+        <strong>🚪 القاعة:</strong>{" "}
+        {selectedAudience.dossier?.salle || "-"}
+      </p>
+
+      <p>
+        <strong>⏰ الساعة:</strong>{" "}
+        {new Date(selectedAudience.dateAudience).toLocaleTimeString(
+          "ar-DZ",
+          { hour: "2-digit", minute: "2-digit" }
+        )}
+      </p>
 
       <p>
         <strong>📅 التاريخ:</strong>{" "}
-        {new Date(selectedAudience.dateAudience).toLocaleDateString("ar-DZ")}
+        {new Date(selectedAudience.dateAudience).toLocaleDateString(
+          "ar-DZ"
+        )}
       </p>
 
-      <p><strong>⚖️ نوع الجلسة:</strong> {selectedAudience.typeAudience}</p>
-      <p><strong>📌 الحالة:</strong> {selectedAudience.statut}</p>
+      <p>
+        <strong>⚖️ نوع الجلسة:</strong>{" "}
+        {selectedAudience.typeAudience?.nom}
+      </p>
+
+      <p>
+        <strong>📌 الحالة:</strong> {selectedAudience.statut}
+      </p>
 
       {selectedAudience.notes && (
-        <p><strong>📝 ملاحظات:</strong> {selectedAudience.notes}</p>
+        <p>
+          <strong>📝 ملاحظات:</strong> {selectedAudience.notes}
+        </p>
+      )}
+      {selectedAudience.decision && (
+        <p>
+          <strong>📝 منطوق الحكم::</strong> {selectedAudience.decision}
+        </p>
       )}
 
-<div className="modal-actions">
-  <button
-    className="btn-edit"
-    onClick={() => {
-      setEditAudience(selectedAudience);
-      setShowModal(false);
-      setShowEditModal(true);
-    }}
-  >
-    ✏️ تعديل الجلسة
-  </button>
-
-  <button className="btn-close" onClick={() => setShowModal(false)}>
-    إغلاق
-  </button>
-</div>
-
+      <div className="modal-actions">
+        <button
+          className="btn-close"
+          onClick={() => setShowModal(false)}
+        >
+          إغلاق
+        </button>
+      </div>
     </div>
   </div>
 )}
+
 {showEditModal && editAudience && (
   <div className="modal-overlay">
     <div className="modal-box">

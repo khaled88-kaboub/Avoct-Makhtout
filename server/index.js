@@ -11,7 +11,14 @@ import paiementRoutes from "./routes/paiementRoute.js";
 //import authRoutes from "./routes/authRoute.js";
 import typeaffRoutes from "./routes/typeAffRoute.js"
 import dashboardRoutes from "./routes/dashboardRoute.js";
-
+import courtRoute from "./routes/courtRoute.js"
+import tribunalRoute from "./routes/tribunalRoute.js"
+import chambreRoute from "./routes/chambreRoute.js";
+import classeRoute from "./routes/classeRoute.js";
+import typeAudienceRoute from "./routes/typeAudienceRoute.js";
+import EtatClientRoute from "./routes/etatClientRoute.js";
+import DelegationRoute from "./routes/delegationRoute.js";
+import TassisRoute from "./routes/tassisRoute.js";
 
 dotenv.config();
 connectDB();
@@ -25,9 +32,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/clients", clientRoutes);
 app.use("/api/dossiers", dossierRoutes);
 app.use("/api/typeaffaire", typeaffRoutes);
+app.use("/api/courts", courtRoute)
 app.use("/api/audiences", audienceRoutes);
 app.use("/api/paiements", paiementRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/tribunals", tribunalRoute);
+app.use("/api/chambres", chambreRoute);
+app.use("/api/classes", classeRoute);
+app.use("/api/typeAudiences", typeAudienceRoute);
+app.use("/api/etatClients", EtatClientRoute);
+app.use("/api/delegations", DelegationRoute);
+app.use("/api/tassiss", TassisRoute);
 //app.use("/api/documents", documentRoutes);
 
 const PORT = process.env.PORT || 5000;

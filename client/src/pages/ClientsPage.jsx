@@ -15,14 +15,15 @@ export default function ClientsPage() {
   const [editId, setEditId] = useState(null);
 
   const [form, setForm] = useState({
-    nom: "",
-    prenom: "",
+    typeClient: "شخص طبيعي",
+    noms: [""], // tableau de noms
     telephone: "",
     adresse: "",
     email: "",
     cin: "",
     dateNaissance: ""
   });
+  
   const API_URL = import.meta.env.VITE_API_URL;
   
   /* ================= DATA ================= */
@@ -41,12 +42,29 @@ export default function ClientsPage() {
   useEffect(() => {
     document.title = "عملاء المحامي";
   }, []);
-
+  const handleTypeChange = (e) => {
+    const value = e.target.value;
+  
+    if (value === "شخص معنوي") {
+      setForm({
+        ...form,
+        typeClient: value,
+        cin: "",
+        dateNaissance: ""
+      });
+    } else {
+      setForm({
+        ...form,
+        typeClient: value
+      });
+    }
+  };
+  
   /* ================= MODAL ================= */
   const openAddModal = () => {
     setForm({
-      nom: "",
-      prenom: "",
+      typeClient: "شخص طبيعي",
+      noms: [""],
       telephone: "",
       adresse: "",
       email: "",
@@ -56,11 +74,12 @@ export default function ClientsPage() {
     setEditId(null);
     setIsModalOpen(true);
   };
+  
 
   const openEditModal = (client) => {
     setForm({
-      nom: client.nom || "",
-      prenom: client.prenom || "",
+      typeClient: client.typeClient,
+      noms: client.noms.length ? client.noms : [""],
       telephone: client.telephone || "",
       adresse: client.adresse || "",
       email: client.email || "",
@@ -72,6 +91,22 @@ export default function ClientsPage() {
     setEditId(client._id);
     setIsModalOpen(true);
   };
+
+  const updateNom = (index, value) => {
+    const newNoms = [...form.noms];
+    newNoms[index] = value;
+    setForm({ ...form, noms: newNoms });
+  };
+  
+  const addNom = () => {
+    setForm({ ...form, noms: [...form.noms, ""] });
+  };
+  
+  const removeNom = (index) => {
+    const newNoms = form.noms.filter((_, i) => i !== index);
+    setForm({ ...form, noms: newNoms.length ? newNoms : [""] });
+  };
+  
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -92,7 +127,7 @@ export default function ClientsPage() {
       alert("حدث خطأ أثناء حفظ البيانات");
     }
   };
-
+  
   const handleDelete = async (id) => {
     if (window.confirm("هل أنت متأكد من حذف هذا الزبون؟")) {
       await deleteClient(id);
@@ -110,12 +145,18 @@ export default function ClientsPage() {
           ➕ إضافة زبون
         </button>
       </div>
-
+      <div className="filters-separator">
+  <span>
+  قائمة الزبائن ({clients.length})
+  </span>
+</div>
       {/* ===== LIST ===== */}
       <div className="clients-cards">
         {clients.map((c) => (
           <div className="client-card" key={c._id}>
-            <h3>{c.nom} {c.prenom}</h3>
+            <h3>{c.noms.join(" / ")}</h3>
+                 <p>👤 {c.typeClient}</p>
+
 
             <p>📞 {c.telephone || "-"}</p>
             <p>🏠 {c.adresse || "-"}</p>
@@ -143,60 +184,97 @@ export default function ClientsPage() {
           <div className="modal-box">
             <h3>{editId ? "تعديل زبون" : "إضافة زبون"}</h3>
 
-            <form className="modal-form" onSubmit={handleSubmit}>
-              <input
-                placeholder="اللقب"
-                value={form.nom}
-                required
-                onChange={(e) => setForm({ ...form, nom: e.target.value })}
-              />
-              <input
-                placeholder="الاسم"
-                value={form.prenom}
-                onChange={(e) => setForm({ ...form, prenom: e.target.value })}
-              />
-              <input
-                placeholder="رقم الهاتف"
-                value={form.telephone}
-                onChange={(e) => setForm({ ...form, telephone: e.target.value })}
-              />
-              <input
-                type="email"
-                placeholder="البريد الإلكتروني"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-              />
-              <input
-                placeholder="رقم الهوية"
-                value={form.cin}
-                onChange={(e) => setForm({ ...form, cin: e.target.value })}
-              />
-              <input
-                type="date"
-                value={form.dateNaissance}
-                onChange={(e) =>
-                  setForm({ ...form, dateNaissance: e.target.value })
-                }
-              />
-              <textarea
-                placeholder="العنوان"
-                value={form.adresse}
-                onChange={(e) => setForm({ ...form, adresse: e.target.value })}
-              />
 
-              <div className="modal-actions">
-                <button className="btn-primary" type="submit">
-                  {editId ? "تحديث" : "إضافة"}
-                </button>
-                <button
-                  type="button"
-                  className="btn-cancel"
-                  onClick={closeModal}
-                >
-                  إلغاء
-                </button>
-              </div>
-            </form>
+
+
+
+
+            <form className="modal-form" onSubmit={handleSubmit}>
+
+{/* TYPE CLIENT */}
+<select value={form.typeClient} onChange={handleTypeChange}>
+  <option value="شخص طبيعي">شخص طبيعي</option>
+  <option value="شخص معنوي">شخص معنوي</option>
+</select>
+
+
+{/* NOMS (TABLEAU) */}
+<label>
+  {form.typeClient === "شخص طبيعي"
+    ? "الاسم"
+    : "الاسم التجاري"}
+</label>
+
+{form.noms.map((nom, index) => (
+  <div key={index} style={{ display: "flex", gap: "5px" }}>
+    <input
+  required
+  placeholder={
+    form.typeClient === "شخص طبيعي"
+      ? `الاسم ${index + 1}`
+      : `الاسم التجاري ${index + 1}`
+  }
+  value={nom}
+  onChange={(e) => updateNom(index, e.target.value)}
+/>
+
+    {form.noms.length > 1 && (
+      <button type="button" onClick={() => removeNom(index)}>❌</button>
+    )}
+  </div>
+))}
+
+<button  className="btn-primary"  type="button" onClick={addNom}>➕ إضافة شخص جديد</button>
+
+{/* AUTRES CHAMPS */}
+<input
+  placeholder="رقم الهاتف"
+  value={form.telephone}
+  onChange={(e) => setForm({ ...form, telephone: e.target.value })}
+/>
+
+<input
+  type="email"
+  placeholder="البريد الإلكتروني"
+  value={form.email}
+  onChange={(e) => setForm({ ...form, email: e.target.value })}
+/>
+
+{form.typeClient === "شخص طبيعي" && (
+  <>
+    <input
+      placeholder="رقم الهوية"
+      value={form.cin}
+      onChange={(e) => setForm({ ...form, cin: e.target.value })}
+    />
+
+    <input
+      type="date"
+      value={form.dateNaissance}
+      onChange={(e) =>
+        setForm({ ...form, dateNaissance: e.target.value })
+      }
+    />
+  </>
+)}
+
+<textarea
+  placeholder="العنوان"
+  value={form.adresse}
+  onChange={(e) => setForm({ ...form, adresse: e.target.value })}
+/>
+
+<div className="modal-actions">
+  <button className="btn-primary" type="submit">
+    {editId ? "تحديث" : "إضافة"}
+  </button>
+  <button type="button" className="btn-cancel" onClick={closeModal}>
+    إلغاء
+  </button>
+</div>
+</form>
+
+              
           </div>
         </div>
         

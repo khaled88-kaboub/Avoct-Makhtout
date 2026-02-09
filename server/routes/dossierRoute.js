@@ -5,7 +5,10 @@ import {
   getDossierById,
   updateDossier,
   closeDossier
+
 } from "../controllers/dossierController.js";
+
+import { generatePaiementfacturePdf } from "../controllers/dossierController.js";
 
 const router = express.Router();
 
@@ -15,6 +18,9 @@ router.post("/", createDossier);
 // Liste de tous les dossiers
 router.get("/", getDossiers);
 
+//Avoir la facture
+router.get("/pdffacture/:id", generatePaiementfacturePdf);
+
 // Dossier par ID
 router.get("/:id", getDossierById);
 
@@ -23,5 +29,8 @@ router.put("/:id", updateDossier);
 
 // Clôturer un dossier
 router.put("/:id/close", closeDossier);
+
+
+
 
 export default router;

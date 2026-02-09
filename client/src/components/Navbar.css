@@ -8,7 +8,7 @@
   align-items: center;
   padding: 14px 20px;
   width: 100%;
-  z-index: 1000;
+  z-index: 10000;
   direction: rtl;
 
   background: linear-gradient(
@@ -117,7 +117,7 @@
   );
   min-width: 160px;
   box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-  z-index: 1000;
+  z-index: 99000;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
