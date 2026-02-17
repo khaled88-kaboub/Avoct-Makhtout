@@ -1,5 +1,5 @@
 import FraisJur from "../models/FraisJur.js";
-import Dossier from "../models/dossier.js";
+import Dossier from "../models/Dossier.js";
 /* ========= CREATE ========= */
 //export const createFraisJur = async (req, res) => {
  // try {
