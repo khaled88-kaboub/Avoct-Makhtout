@@ -56,6 +56,7 @@ export const getAudiences = async (req, res) => {
             { path: "tribunal", select: "nom " },
             { path: "court", select: "nom wilayaNumber" },
             { path: "chambre", select: "nom" },
+            { path: "classe", select: "nom" },
             { path: "client", select: "noms" }
             
           ]

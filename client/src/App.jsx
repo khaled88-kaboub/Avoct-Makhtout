@@ -19,6 +19,11 @@ import AdminTypeAudiencesPage from "./pages/AdminTypeAudiencePage";
 import AdminEtatClientsPage from "./pages/AdminEtatClientPage";
 import DelegationPage from "./pages/DelegationPage";
 import TassisPage from "./pages/TassisPage";
+import FraisGlesPage from "./pages/FraisGlePage";
+import FraisJursPage from "./pages/FraisJurPage";
+import DesignationDepGle from "./pages/DesignationDepGle";
+import DesignationDepJur from "./pages/DesignationDepJur";
+
 export default function App() {
   return (
     <Router>
@@ -42,6 +47,10 @@ export default function App() {
           <Route path="/settings/etat-clients" element={<AdminEtatClientsPage />} />
           <Route path="/inaba" element={<DelegationPage />} />
           <Route path="/tassis" element={<TassisPage />} />
+          <Route path="/desdepgle" element={<DesignationDepGle />} />
+          <Route path="/desdepjur" element={<DesignationDepJur />} />
+          <Route path="/depgle" element={<FraisGlesPage />} />
+          <Route path="/depjur" element={<FraisJursPage />} />
      
         </Routes>
       </div>

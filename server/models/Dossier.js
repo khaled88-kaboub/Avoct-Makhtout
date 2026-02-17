@@ -94,6 +94,7 @@ const dossierSchema = new mongoose.Schema({
 
   audiences: [{ type: mongoose.Schema.Types.ObjectId, ref: "Audience" }],
   paiements: [{ type: mongoose.Schema.Types.ObjectId, ref: "Paiement" }],
+  fraisJurs: [{ type: mongoose.Schema.Types.ObjectId, ref: "FraisJur" }],
   documents: [{ type: mongoose.Schema.Types.ObjectId, ref: "Document" }]
 });
 
@@ -131,4 +132,4 @@ dossierSchema.pre("save", async function () {
   this.reference = `ملف-${counter.seq}-${new Date().getFullYear()}`;
 });
 
-export default mongoose.model("Dossier", dossierSchema);
+export default mongoose.models.Dossier || mongoose.model("Dossier", dossierSchema);

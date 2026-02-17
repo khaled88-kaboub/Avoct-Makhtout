@@ -17,6 +17,8 @@ export default function Dashboard() {
   const [stats, setStats] = useState({});
   const [audiences, setAudiences] = useState([]);
   const [paiements, setPaiements] = useState([]);
+  const [paiements1, setPaiements1] = useState([]);
+  const [paiements2, setPaiements2] = useState([]);
   const API_URL = import.meta.env.VITE_API_URL;
   useEffect(() => {
     loadDashboard();
@@ -38,7 +40,7 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-page" dir="rtl">
-      <h2>لوحة التحكم</h2>
+      <h2>لوحة القيادة</h2>
 
       {/* ===== KPI ===== */}
       <div className="kpi-grid">
@@ -49,6 +51,16 @@ export default function Dashboard() {
             <span>{stats.dossiers || 0}</span>
           </div>
         </div>
+
+
+        <div className="kpi-card">
+          <FaUsers />
+          <div>
+            <h4>العملاء</h4>
+            <span>{stats.clients || 0}</span>
+          </div>
+        </div>
+
 
         <div className="kpi-card">
           <FaCalendarAlt />
@@ -67,12 +79,22 @@ export default function Dashboard() {
         </div>
 
         <div className="kpi-card">
-          <FaUsers />
+          <FaMoneyBillWave />
           <div>
-            <h4>العملاء</h4>
-            <span>{stats.clients || 0}</span>
+            <h4>المصاريف العامة</h4>
+            <span >{stats.fraisgeneral || 0} دج</span>
           </div>
         </div>
+
+        <div className="kpi-card">
+          <FaMoneyBillWave />
+          <div>
+            <h4>المصاريف القضائية</h4>
+            <span>{stats.fraisjuridiues || 0} دج</span>
+          </div>
+        </div>
+
+       
       </div>
 
       {/* ===== LISTS ===== */}

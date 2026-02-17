@@ -71,7 +71,7 @@ const PaiementsListModal = ({ dossier, onClose }) => {
     <div className="modal-overlay">
       <div className="modal-box" style={{ maxWidth: '750px' }}>
         <div className="modal-header" style={{ display: 'block', textAlign: 'center' }}>
-          <h3>💰 الوضعية المالية للملف: {dossier.titre}</h3>
+          <h3>💰   مداخيل الملف: {dossier.titre}</h3>
           <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '10px', background: '#f8f9fa', padding: '10px', borderRadius: '8px' }}>
              <div><small>إجمالي الأتعاب:</small> <br/> <strong>{prixTotal} دج</strong></div>
              <div style={{ color: 'green' }}><small>المبلغ المدفوع:</small> <br/> <strong>{totalPaye} دج</strong></div>
@@ -131,12 +131,69 @@ const PaiementsListModal = ({ dossier, onClose }) => {
     </div>
   );
 };
+
+
+const MassarifListModal = ({ dossier, onClose }) => {
+  if (!dossier) return null;
+
+  // Calculs rapides pour l'affichage
+  const prixTotal = dossier.price || 0;
+  
+  const totalFrais = dossier.fraisJurs?.reduce((acc, v) => acc + v.montant, 0) || 0;
+  //const resteFinal = prixTotal - totalPaye;
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-box" style={{ maxWidth: '750px' }}>
+        <div className="modal-header" style={{ display: 'block', textAlign: 'center' }}>
+          <h3>💰  المصاريف القضائية للملف: {dossier.titre}</h3>
+          <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '10px', background: '#f8f9fa', padding: '10px', borderRadius: '8px' }}>
+             <div><small>إجمالي المصاريف:</small> <br/> <strong>{totalFrais} دج</strong></div>
+             
+          </div>
+        </div>
+
+        <div className="modal-body" dir="rtl" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+          {dossier.fraisJurs && dossier.fraisJurs.length > 0 ? (
+            <table className="audiences-table" style={{ width: '100%' }}>
+              <thead>
+                <tr>
+                  <th>التاريخ</th>
+                  <th>المبلغ</th>
+                  <th>الصنف</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {dossier.fraisJurs.map((f, index) => (
+                  <tr key={f._id || index}>
+                    <td>{f.datePaiement ? new Date(f.datePaiement).toLocaleDateString("ar-DZ") : "-"}</td>
+                    <td style={{ fontWeight: 'bold' }}>{f.montant} دج</td>
+                    <td>{f.designationDepJur.nom || "مصاريف"}</td> 
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p style={{ textAlign: 'center', padding: '20px' }}>لا توجد مصاريف مسجلة.</p>
+          )}
+        </div>
+        <div className="modal-actions">
+          <button className="btn-primary" onClick={onClose}>إغلاق</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 export default function DossiersPage() {
   const [dossiers, setDossiers] = useState([]);
   const [clients, setClients] = useState([]);
   const [typesAff, setTypesAff] = useState([]);
   const [selectedDossierForAud, setSelectedDossierForAud] = useState(null);
   const [selectedDossierForPay, setSelectedDossierForPay] = useState(null);
+  const [selectedDossierForMas, setSelectedDossierForMas] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
   const [searchText, setSearchText] = useState("");
@@ -394,7 +451,7 @@ export default function DossiersPage() {
               <p>🔖 المرجع: {d.reference || "-"}</p>
               <p>📌 نوع القضية:   <strong >{d.typeAffaire?.libelle || "-"}</strong> </p>
               <p>
-              👤  العميل: 
+              👤 العميل:  
               <span
               className="client-name"
               title={d.client?.noms?.join(" / ")}
@@ -411,6 +468,7 @@ export default function DossiersPage() {
               <p>📂 الغرفة: {d.chambre?.nom || "-"}</p>
               <p className="couleur"> 📂 القاعة :  {d.salle || "-"}</p>
               <p>📂 رقم تسجيل القضية: {d.numero || "-"}</p>
+              <p>📂 الخصم   : {d.adversaire || "-"}</p>
               </>
                )}
 
@@ -420,7 +478,7 @@ export default function DossiersPage() {
                <p>📂 القسم: {d.classe?.nom || "-"} -  </p>
                <p className="couleur">📂 القاعة :  {d.salle || "-"}</p>
                <p>📂 رقم تسجيل القضية: {d.numero || "-"}</p>
-               <p>📂 الخصم :  : {d.adversaire || "-"}</p>
+               <p>📂 الخصم   : {d.adversaire || "-"}</p>
                </>
                 )}
 
@@ -456,6 +514,9 @@ export default function DossiersPage() {
 
 
                {/* Dans le rendu de votre carte dossier */}
+
+<p>مزيد من التفاصيل عن :</p>
+
 <div className="card-actions">
   {/* REMPLACER LE BOUTON PAR UN LIEN */}
   <a 
@@ -466,7 +527,7 @@ export default function DossiersPage() {
       setSelectedDossierForAud(d);
     }}
   >
-    📅 عرض الجلسات  ({d.audiences?.length || 0})
+    📅  الجلسات ({d.audiences?.length || 0})
   </a>
   <a 
   href="#!" 
@@ -477,10 +538,25 @@ export default function DossiersPage() {
     setSelectedDossierForPay(d);
   }}
 >
-  💰 سجل الدفعات ({d.paiements?.length || 0})
+  💰  الدفعات ({d.paiements?.length || 0})
 </a>
- 
+
+
+<a  
+  href="#!" 
+  className="dossier-link" 
+  style={{ color: '#27ae60' }} // Couleur verte pour le paiement
+  onClick={(e) => {
+    e.preventDefault();
+    setSelectedDossierForMas(d);
+  }}
+>
+  💰  المصاريف({d.fraisJurs?.length || 0})
+</a>
+
 </div>
+
+
               <div className="card-actions">
               
                 <button onClick={() => openEditModal(d)}> تعديل</button>
@@ -728,6 +804,13 @@ export default function DossiersPage() {
   <PaiementsListModal 
     dossier={selectedDossierForPay} 
     onClose={() => setSelectedDossierForPay(null)} 
+  />
+)}
+
+{selectedDossierForMas && (
+  <MassarifListModal 
+    dossier={selectedDossierForMas} 
+    onClose={() => setSelectedDossierForMas(null)} 
   />
 )}
     </div>

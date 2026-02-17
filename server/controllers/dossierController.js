@@ -116,7 +116,11 @@ export const getDossiers = async (req, res) => {
       .populate("audiences", "dateAudience typeAudience notes statut decision")
     
       .populate("paiements")
-  
+      .populate("fraisJurs")
+      .populate({
+        path: 'fraisJurs',
+        populate: { path: 'designationDepJur' } // Pour afficher le NOM de la dépense (bayane)
+      })
       .populate("chambre", "nom")
       .populate({
         path: "tribunal",
@@ -138,6 +142,7 @@ export const getDossierById = async (req, res) => {
       .populate("typeAffaire", "libelle")
       .populate("audiences", "dateAudience typeAudience notes statut decision")
       .populate("paiements")
+      .populate("fraisJurs")
       .populate("court", "nom wilayaNumber")
       .populate("chambre", "nom")
       .populate({

@@ -2,6 +2,8 @@ import Dossier from "../models/Dossier.js";
 import Audience from "../models/Audience.js";
 import Paiement from "../models/Paiement.js";
 import Client from "../models/Client.js";
+import FraisJur from "../models/FraisJur.js";
+import FraisGle from "../models/FraisGle.js"; 
 
 /* ================= STATS ================= */
 export const getDashboardStats = async (req, res) => {
@@ -25,11 +27,31 @@ export const getDashboardStats = async (req, res) => {
       }
     ]);
 
+    const fraisJurs = await FraisJur.aggregate([
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$montant" }
+        }
+      }
+    ]);
+
+    const fraisGles = await FraisGle.aggregate([
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$montant" }
+        }
+      }
+    ]);
+
     res.json({
       dossiers: totalDossiers,
       clients: totalClients,
       audiences: audiencesThisMonth,
-      revenus: paiements[0]?.total || 0
+      revenus: paiements[0]?.total || 0,
+      fraisjuridiues: fraisJurs[0]?.total || 0,
+      fraisgeneral: fraisGles[0]?.total || 0,
     });
 
   } catch (err) {

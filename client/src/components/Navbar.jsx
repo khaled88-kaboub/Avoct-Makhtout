@@ -9,6 +9,7 @@ import {
   FaRegCalendarCheck,
   FaCalendarAlt,
   FaHome,
+  FaWallet,
   FaCog, // أيقونة الإعدادات
   FaChevronDown // أيقونة السهم لأسفل
 } from "react-icons/fa";
@@ -17,12 +18,18 @@ import "./Navbar.css";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [open1, setOpen1] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false); // حالة القائمة المنسدلة
+  const [dropdownOpen1, setDropdownOpen1] = useState(false); // حالة القائمة المنسدلة
 
   const closeAll = () => {
     setOpen(false);
     setDropdownOpen(false);
+    setOpen1(false);
+    setDropdownOpen1(false);
   };
+
+  
 
   return (
     <nav className="navbar" dir="rtl">
@@ -70,6 +77,32 @@ export default function Navbar() {
         <NavLink to="/paiements" className="nav-link" onClick={() => setOpen(false)}>
           <FaMoneyBillWave />المدفوعات
         </NavLink>
+
+
+        {/* قائمة المصاريف المنسدلة */}
+        <div className="nav-item-dropdown">
+          <button 
+            className="dropdown-trigger" 
+            onClick={() => setDropdownOpen1(!dropdownOpen1)}
+          >
+            <FaWallet /> المصاريف <FaChevronDown className="arrow-icon" />
+          </button>
+          
+          {dropdownOpen1 && (
+            <div className="dropdown-menu">
+              <NavLink to="/depgle" className="dropdown-item" onClick={closeAll}>
+              المصاريف العامة 
+              </NavLink>
+              <NavLink to="/depjur" className="dropdown-item" onClick={closeAll}>
+              المصاريف القضائية 
+              </NavLink>
+              
+            </div>
+          )}
+        </div>
+
+
+
         {/* قائمة الإعدادات المنسدلة */}
         <div className="nav-item-dropdown">
           <button 
@@ -101,6 +134,12 @@ export default function Navbar() {
               </NavLink>
               <NavLink to="/settings/etat-clients" className="dropdown-item" onClick={closeAll}>
               وصف للعميل    
+              </NavLink>
+              <NavLink to="/desdepgle" className="dropdown-item" onClick={closeAll}>
+              المصاريف العامة 
+              </NavLink>
+              <NavLink to="/desdepjur" className="dropdown-item" onClick={closeAll}>
+              المصاريف القضائية 
               </NavLink>
             </div>
           )}

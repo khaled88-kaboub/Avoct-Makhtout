@@ -210,7 +210,7 @@
 
 /* ================= ACTIONS ================= */
 .card-actions {
-  margin-top: 14px;
+  margin-top: 7px;
   display: flex;
   gap: 12px;
 }

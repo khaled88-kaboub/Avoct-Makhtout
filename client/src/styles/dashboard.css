@@ -13,7 +13,7 @@
   /* ===== KPI ===== */
   .kpi-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(3,  1fr);
     gap: 20px;
     margin-bottom: 30px;
   }
@@ -48,7 +48,7 @@
   /* ===== MAIN GRID ===== */
   .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(2, minmax(300px, 1fr));
     gap: 20px;
   }
   
@@ -115,3 +115,57 @@
     background-color: #374ac0;
   }
   
+  /* ================= RESPONSIVE ================= */
+
+/* --- Tablettes et écrans moyens (moins de 1024px) --- */
+@media (max-width: 1024px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr); /* Passe de 3 à 2 colonnes */
+  }
+}
+
+/* --- Mobiles larges (moins de 768px) --- */
+@media (max-width: 768px) {
+  .dashboard-page {
+    padding: 15px; /* On réduit l'espace sur les côtés */
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr; /* Une seule colonne pour les KPI */
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr; /* Une seule colonne pour les graphiques/listes */
+  }
+
+  .quick-actions {
+    justify-content: center; /* Centre les boutons sur mobile */
+  }
+  
+  .quick-actions button {
+    width: 100%; /* Les boutons prennent toute la largeur pour être plus cliquables */
+    justify-content: center;
+  }
+}
+
+/* --- Petits mobiles (moins de 480px) --- */
+@media (max-width: 480px) {
+  .dashboard-page h2 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .kpi-card {
+    padding: 12px;
+  }
+
+  .list li {
+    flex-direction: column; /* On empile le texte et le montant si c'est trop serré */
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .list span {
+    align-self: flex-end; /* Le montant s'aligne à droite pour garder de la clarté */
+  }
+}

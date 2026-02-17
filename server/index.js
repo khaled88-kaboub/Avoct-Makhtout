@@ -19,6 +19,10 @@ import typeAudienceRoute from "./routes/typeAudienceRoute.js";
 import EtatClientRoute from "./routes/etatClientRoute.js";
 import DelegationRoute from "./routes/delegationRoute.js";
 import TassisRoute from "./routes/tassisRoute.js";
+import DesignationDepGle from "./routes/designationDepGleRoute.js";
+import DesignationDepJur from "./routes/designationDepJurRoute.js";
+import FraisGle from "./routes/fraisGleRoute.js";
+import FraisJur from "./routes/fraisJurRoute.js";
 
 dotenv.config();
 connectDB();
@@ -42,6 +46,10 @@ app.use("/api/classes", classeRoute);
 app.use("/api/typeAudiences", typeAudienceRoute);
 app.use("/api/etatClients", EtatClientRoute);
 app.use("/api/delegations", DelegationRoute);
+app.use("/api/fraisgle", FraisGle);
+app.use("/api/fraisjur", FraisJur);
+app.use("/api/designation_dep_gle", DesignationDepGle);
+app.use("/api/designation_dep_jur", DesignationDepJur);
 app.use("/api/tassiss", TassisRoute);
 //app.use("/api/documents", documentRoutes);
 

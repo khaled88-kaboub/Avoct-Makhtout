@@ -88,11 +88,26 @@ export default function AudienceCalendar() {
         {selectedAudience.dossier?.client?.noms?.join(" ، ")}
       </p>
 
+      <p>
+        <strong>👤 الخصم:</strong>{" "}
+        {selectedAudience.dossier?.adversaire}
+      </p>
+
       {/* المحكمة / المجلس */}
       {selectedAudience.dossier?.juridictionType === "tribunal" && (
         <p>
           <strong>⚖️ المحكمة:</strong>{" "}
           {selectedAudience.dossier?.tribunal?.nom}
+        
+        </p>
+      )}
+
+      {/* المحكمة / المجلس */}
+      {selectedAudience.dossier?.juridictionType === "tribunal" && (
+        <p>
+          <strong>⚖️ القسم:</strong>{" "}
+          {selectedAudience.dossier?.classe?.nom}
+        
         </p>
       )}
 
@@ -103,6 +118,14 @@ export default function AudienceCalendar() {
             selectedAudience.dossier?.court?.wilayaNumber
           ).padStart(2, "0")}){" "}
           {selectedAudience.dossier?.court?.nom}
+        </p>
+      )}
+
+{selectedAudience.dossier?.juridictionType === "court" && (
+        <p>
+          <strong>⚖️ الغرفة:</strong>{" "}
+         
+          {selectedAudience.dossier?.chambre?.nom}
         </p>
       )}
 
