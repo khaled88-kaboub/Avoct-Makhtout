@@ -1,4 +1,4 @@
-import { FaGavel, FaFolderOpen, FaMoneyBillWave, FaCalendarAlt, FaUsers, FaChartLine } from "react-icons/fa";
+import { FaGavel, FaFolderOpen, FaMoneyBillWave, FaWallet,FaUserEdit, FaPhone, FaEnvelope,FaPrint, FaUser, FaCalendarAlt, FaUsers, FaChartLine } from "react-icons/fa";
 import "../styles/about.css";
 import { useEffect, useState } from "react";
 export default function AboutPage() {
@@ -34,6 +34,22 @@ export default function AboutPage() {
           </p>
         </div>
 
+
+{/* الجديدة: إدارة الإنابات */}
+<div className="feature-card">
+          <FaUserEdit />
+          <h4>إدارة الإنابات</h4>
+          <p>تسجيل وإدارة الإنابات القضائية بدقة، مع تحديد المحامي المناب وتفاصيل المهمة.</p>
+        </div>
+
+        {/* الجديدة: الطباعة الذكية */}
+        <div className="feature-card">
+          <FaPrint />
+          <h4>طباعة الوثائق</h4>
+          <p>طباعة فورية واحترافية للإنابات، وصولات الدفع، الفواتير، وإعلانات افتتاح القضايا.</p>
+        </div>
+
+
         <div className="feature-card">
           <FaCalendarAlt />
           <h4>الرزنامة والجلسات</h4>
@@ -51,6 +67,14 @@ export default function AboutPage() {
             حساب المبالغ المتبقية وتتبعها بسهولة.
           </p>
         </div>
+
+{/* الجديدة: إدارة المصاريف */}
+<div className="feature-card">
+          <FaWallet />
+          <h4>تتبع المصاريف</h4>
+          <p>إدارة دقيقة للمصاريف (العامة كالكهرباء والكراء، والقضائية الخاصة بكل ملف).</p>
+        </div>
+
 
         <div className="feature-card">
           <FaChartLine />
@@ -76,6 +100,22 @@ export default function AboutPage() {
         <strong> التركيز على القضايا </strong>
         بدل تضييع الوقت في التسيير اليدوي.
       </p>
+
+      {/* قسم معلومات الاتصال */}
+      <div className="contact-section">
+        <h3>معلومات المطور</h3>
+        <div className="contact-info">
+          <div className="contact-item">
+            <FaUser /> <span>خالد كبوب</span>
+          </div>
+          <div className="contact-item">
+            <FaPhone /> <span>0669-36-19-52</span>
+          </div>
+          <div className="contact-item">
+            <FaEnvelope /> <span>[khaledkaboub88@gmail.com ]</span>
+          </div>
+        </div>
+        </div>
     </div>
   );
 }

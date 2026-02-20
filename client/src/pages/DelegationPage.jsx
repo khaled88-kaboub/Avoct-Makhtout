@@ -98,7 +98,8 @@ export default function DelegationPage() {
           dossier: "",
           personne: "",
           adversaire: "",
-          qpersonne: ""
+          qpersonne: "",
+          qadversaire: ""
         });
         return;
       }
@@ -112,6 +113,7 @@ export default function DelegationPage() {
         dossier: dossierId,
         personne: clientName,          // ✅ String
         adversaire: selected.adversaire, // ✅ String
+        qadversaire: selected.qadversaire, // ✅ String
         qpersonne: selected.qualite?.nom || ""
       });
     };

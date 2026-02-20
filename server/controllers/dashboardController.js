@@ -93,3 +93,70 @@ export const getLastPaiements = async (req, res) => {
     res.status(500).json(err);
   }
 };
+
+/* ================= MONTHLY FINANCIAL STATS ================= */
+export const getMonthlyFinanceStats = async (req, res) => {
+  try {
+    const { year } = req.query;
+
+    const matchStage = year
+      ? {
+          $match: {
+            datePaiement: {
+              $gte: new Date(`${year}-01-01`),
+              $lte: new Date(`${year}-12-31`)
+            }
+          }
+        }
+      : null;
+
+    const paiements = await Paiement.aggregate([
+      ...(matchStage ? [matchStage] : []),
+      {
+        $group: {
+          _id: {
+            year: { $year: "$datePaiement" },
+            month: { $month: "$datePaiement" }
+          },
+          total: { $sum: "$montant" }
+        }
+      },
+      { $sort: { "_id.month": 1 } }
+    ]);
+
+    const fraisJur = await FraisJur.aggregate([
+      ...(matchStage ? [matchStage] : []),
+      {
+        $group: {
+          _id: {
+            year: { $year: "$datePaiement" },
+            month: { $month: "$datePaiement" }
+          },
+          total: { $sum: "$montant" }
+        }
+      },
+      { $sort: { "_id.month": 1 } }
+    ]);
+
+
+    const fraisGle = await FraisGle.aggregate([
+      ...(matchStage ? [matchStage] : []),
+      {
+        $group: {
+          _id: {
+            year: { $year: "$datePaiement" },
+            month: { $month: "$datePaiement" }
+          },
+          total: { $sum: "$montant" }
+        }
+      },
+      { $sort: { "_id.month": 1 } }
+    ]);
+
+
+    res.json({ paiements, fraisJur, fraisGle });
+
+  } catch (err) {
+    res.status(500).json({ message: "Erreur stats mensuelles", err });
+  }
+};

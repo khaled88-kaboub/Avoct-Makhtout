@@ -231,7 +231,7 @@ doc.moveDown(2);
 doc.fontSize(14);
 doc.text((" لفائدة:  "), { align: "right", underline: true  });
 doc.moveDown(0.3);
-const momo = tassis.personne.trim().replace(/\s+/g, '_') || "...";
+const momo = tassis.personne.trim().replace(/(?<=[\u0600-\u06FF])\s+(?=[\u0600-\u06FF])/g, '_') || "...";
 const popo = tassis.qpersonne.trim().replace(/\s+/g, '_') || "...";
 const descro = tassis.desc || "...";
 const ligneComplete = `)${rtl(popo)}( ................................................................ ${momo}`;

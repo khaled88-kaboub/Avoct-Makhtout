@@ -234,8 +234,9 @@ doc.moveDown(0.3);
 //doc.text(`${delegation?.dossier?.client?.noms.replace(/\s+/g, '_') || "..."} `, { align: "right" });
 //******************************************************* */
 // Préparation des données
-const momo = delegation.personne || "...";
-const popo = delegation.qpersonne.trim().replace(/\s+/g, '_') || "...";
+const momo = delegation.personne.trim()
+  .replace(/(?<=[\u0600-\u06FF])\s+(?=[\u0600-\u06FF])/g, '_') || "...";
+const popo = delegation.qpersonne.trim().replace(/(?<=[\u0600-\u06FF])\s+(?=[\u0600-\u06FF])/g, '_') || "...";
 
 // Construction de la ligne
 // On utilise les points au milieu pour combler l'espace

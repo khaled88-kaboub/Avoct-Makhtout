@@ -252,8 +252,8 @@ doc.moveDown(2);
 
 // استخدام Regex مع العلم 'g' لاستبدال كل المسافات
 const nomClean = Array.isArray(paiement.dossier.client.noms) 
-    ? paiement.dossier.client.noms.join(" -- ").trim() 
-    : (paiement.dossier.client.noms || "").trim();
+    ? paiement.dossier.client.noms.join(" -- ").trim().replace(/\s+/g, '_')
+    : (paiement.dossier.client.noms.trim().replace(/\s+/g, '_') || "");
 
 const titrClean = paiement.dossier.titre.trim().replace(/\s+/g, '_');
 const paiementClean = paiement.modePaiement.trim().replace(/\s+/g, '_');

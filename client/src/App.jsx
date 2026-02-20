@@ -23,7 +23,7 @@ import FraisGlesPage from "./pages/FraisGlePage";
 import FraisJursPage from "./pages/FraisJurPage";
 import DesignationDepGle from "./pages/DesignationDepGle";
 import DesignationDepJur from "./pages/DesignationDepJur";
-
+import FinanceDashboard from "./pages/FinanceDashboard";
 export default function App() {
   return (
     <Router>
@@ -31,7 +31,8 @@ export default function App() {
       <div className="page-content">
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/clients" element={<ClientsPage />} />
+          <Route path="/clients" element={<ClientsPage/>} />
+          <Route path="/financial" element={<FinanceDashboard/>} />
           <Route path="/dossiers" element={<DossiersPage />} />
           <Route path="/types" element={<TypeAffPage />} />
           <Route path="/audiences" element={<AudiencesPage />} />

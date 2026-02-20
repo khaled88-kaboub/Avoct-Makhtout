@@ -330,8 +330,8 @@ if (fs.existsSync(logoPath)) {
 
 // استخدام Regex مع العلم 'g' لاستبدال كل المسافات
     const nomClean = Array.isArray(paiement.client.noms) 
-    ? paiement.client.noms.join(" * ").trim().replace(/\s+/g, '_') 
-    : (paiement.client.noms || "").trim().replace(/\s+/g, '_');
+    ? paiement.client.noms.join(" * ").trim().replace(/(?<=[\u0600-\u06FF])\s+(?=[\u0600-\u06FF])/g, '_') || "..."
+    : (paiement.client.noms || "").trim().replace(/(?<=[\u0600-\u06FF])\s+(?=[\u0600-\u06FF])/g, '_') || "...";
 
 const titrClean = paiement.titre.trim().replace(/\s+/g, '_');
 const titrePrice = paiement.price;
@@ -351,14 +351,14 @@ doc.fontSize(14);
 // الحل الأضمن: فصل التسمية عن القيمة لتجنب تداخل ترتيب الكلمات
 doc.text(("  سيدي: "), { align: "right" });
 doc.moveDown(0.5);
-doc.text(("      .............. دعوى أتعاب مبلغ ذمتكم في  لنا إن      "), { align: "right" });
-doc.fillColor("#444444");
-doc.fontSize(12);
-doc.text(`${titrClean}`, { align: "center"  });
-doc.fillColor("black"); // Retour au noir
-doc.moveDown(0.5);
-doc.fontSize(14);
-doc.text((" ....................................  أمام المرفوعة   "), { align: "right" });
+doc.text(("      .............. أمام المرفوعة الدعوى أتعاب مبلغ ذمتكم في  لنا إن      "), { align: "right" });
+//doc.fillColor("#444444");
+//doc.fontSize(12);
+//doc.text(`${titrClean}`, { align: "center"  });
+//doc.fillColor("black"); // Retour au noir
+//doc.moveDown(0.5);
+//doc.fontSize(14);
+//doc.text((" ....................................  أمام المرفوعة   "), { align: "right" });
 doc.moveDown(0.5);
 /* ================= معلومات الجهة القضائية ================= */
 doc.fontSize(12);

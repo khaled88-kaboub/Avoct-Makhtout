@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import {
     FaFolderOpen,
     FaCalendarAlt,
@@ -20,6 +21,7 @@ export default function Dashboard() {
   const [paiements1, setPaiements1] = useState([]);
   const [paiements2, setPaiements2] = useState([]);
   const API_URL = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
   useEffect(() => {
     loadDashboard();
   }, []);
@@ -127,18 +129,10 @@ export default function Dashboard() {
         
       </div>
       <div className="quick-actions">
-          <button>
-            <FaPlus /> ملف جديد
-          </button>
-          <button>
-            <FaCalendarAlt /> إضافة جلسة
-          </button>
-          <button>
-            <FaMoneyBillWave /> تسجيل دفع
-          </button>
-          <button>
-            <FaChartLine /> تقرير مالي
-          </button>
+          
+          <button onClick={() => navigate("/financial")}>
+  <FaChartLine /> تقرير مالي
+</button>
         </div>
     </div>
     
