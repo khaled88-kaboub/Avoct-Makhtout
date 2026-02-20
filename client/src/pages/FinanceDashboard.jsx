@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -27,7 +29,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 export default function FinanceDashboard() {
   const [data, setData] = useState(null);
   const [year, setYear] = useState(new Date().getFullYear());
-
+  const [sortOrder, setSortOrder] = useState("asc");
   useEffect(() => {
     fetchData();
   }, [year]);
@@ -36,7 +38,9 @@ export default function FinanceDashboard() {
     const res = await axios.get(`${API_URL}/api/dashboard/financial?year=${year}`);
     setData(res.data);
   };
-
+  useEffect(() => {
+    document.title = "بيانات رقمية ";
+  }, []);
   const exportPDF = async () => {
     const element = document.getElementById("dashboard");
     const canvas = await html2canvas(element);
@@ -61,17 +65,67 @@ export default function FinanceDashboard() {
   const totalPaiements = paiements.reduce((a,b)=>a+b,0);
   const totalDepenses = [...fraisJur,...fraisGle].reduce((a,b)=>a+b,0);
   const gain = totalPaiements - totalDepenses;
-
+  const monthlyExpenses = months.map((_, i) => fraisJur[i] + fraisGle[i]);
+  const monthlyProfit = months.map((_, i) => paiements[i] - monthlyExpenses[i]);
+ 
+  
+  
   const chartData = {
     labels: [
-        "جانفي","فيفري","مارس","أفريل","ماي","جوان",
-        "جويلية","أوت","سبتمبر","أكتوبر","نوفمبر","ديسمبر"
-      ],
+      "جانفي","فيفري","مارس","أفريل","ماي","جوان",
+      "جويلية","أوت","سبتمبر","أكتوبر","نوفمبر","ديسمبر"
+    ],
     datasets: [
       { label: "المداخيل", data: paiements, backgroundColor: "#2E86DE" },
-      { label: "المصاريف", data: months.map((_,i)=>fraisJur[i]+fraisGle[i]), backgroundColor: "#E74C3C" }
+      { 
+        label: "المصاريف", 
+        data: monthlyExpenses, 
+        backgroundColor: "#E74C3C" 
+      }
     ]
   };
+
+  const tableData = chartData.labels.map((month, index) => ({
+    month,
+    income: paiements[index],
+    expenses: monthlyExpenses[index],
+    profit: monthlyProfit[index],
+    monthIndex: index
+  }));
+
+  const sortedData = [...tableData].sort((a, b) => {
+    return sortOrder === "asc"
+      ? a.monthIndex - b.monthIndex
+      : b.monthIndex - a.monthIndex;
+  });
+  const exportExcel = () => {
+    const worksheetData = sortedData.map(row => ({
+      الشهر: row.month,
+      المداخيل: row.income,
+      المصاريف: row.expenses,
+      "صافي الربح": row.profit
+    }));
+  
+    worksheetData.push({
+      الشهر: "الإجمالي",
+      المداخيل: totalPaiements,
+      المصاريف: totalDepenses,
+      "صافي الربح": gain
+    });
+  
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Finance");
+  
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array"
+    });
+  
+    const file = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(file, `التقرير-المالي-${year}.xlsx`);
+  };
+
 
   return (
     
@@ -109,6 +163,64 @@ export default function FinanceDashboard() {
           <Bar data={chartData}/>
         </div>
 
+
+        <div className="table-box">
+  <h3>تفاصيل شهرية</h3>
+  
+
+ {/* <button 
+    className="sort-btn"
+    onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+  >
+    ترتيب حسب الشهر {sortOrder === "asc" ? "⬆" : "⬇"}
+          </button>*/}
+
+  <button className="export-btn" onClick={exportExcel}>Excel</button>
+
+  <table className="finance-table">
+    <thead>
+      <tr>
+        <th>الشهر</th>
+        <th>المداخيل</th>
+        <th>المصاريف</th>
+        <th>صافي الربح</th>
+      </tr>
+    </thead>
+    <tbody>
+      {sortedData.map((row, index) => (
+        <tr key={index}>
+          <td>{row.month}</td>
+          <td>{row.income.toLocaleString("ar-DZ")} دج</td>
+          <td>{row.expenses.toLocaleString("ar-DZ")} دج</td>
+          <td
+            style={{
+              color: row.profit >= 0 ? "#27AE60" : "#C0392B",
+              fontWeight: "bold"
+            }}
+          >
+            {row.profit.toLocaleString("ar-DZ")} دج
+          </td>
+        </tr>
+      ))}
+
+      {/* TOTAL ROW */}
+      <tr className="total-row">
+        <td>الإجمالي</td>
+        <td>{totalPaiements.toLocaleString("ar-DZ")} دج</td>
+        <td>{totalDepenses.toLocaleString("ar-DZ")} دج</td>
+        <td
+          style={{
+            color: gain >= 0 ? "#27AE60" : "#C0392B",
+            fontWeight: "bold"
+          }}
+        >
+          {gain.toLocaleString("ar-DZ")} دج
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
       </div>
     </div>
   );
