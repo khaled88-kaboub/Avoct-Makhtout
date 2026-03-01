@@ -1,20 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-:root {
-  --primary: #1e3a8a;
-  --primary-light: #4f46e5;
-  --bg: #f5f7fb;
-  --card-bg: #ffffff;
-  --text-main: #1f2937;
-  --text-muted: #6b7280;
-  --border-soft: #e5e7eb;
-}
 
 /* ================= PAGE ================= */
 .dossiers-page {
   font-family: 'Poppins', sans-serif;
   padding: 32px;
-  background: linear-gradient(180deg, #f8fafc, var(--bg));
+  background-color: #f3f4f6;
   min-height: 100vh;
 }
 
@@ -28,9 +19,8 @@
 }
 
 .page-header h2 {
-  color: var(--primary);
-  font-weight: 700;
-  letter-spacing: .3px;
+  color: #1e3a8a;
+  font-weight: 600;
 }
 
 .btn-add {
@@ -41,8 +31,8 @@
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(79,70,229,0.25);
-  transition: transform .2s, box-shadow .2s;
+  cursor: pointer;
+  transition: background 0.3s;
 }
 
 .btn-add:hover {
@@ -137,7 +127,7 @@
 }
 
 .dossier-card {
-  background: var(--card-bg);
+  background: #ffffff;
   padding: 22px;
   border-radius: 16px;
   box-shadow: 0 10px 28px rgba(0,0,0,0.08);
@@ -160,7 +150,7 @@
 .couleur {
   color: red;
 }
-.card-header h3 {
+.card-header h4 {
   margin: 0;
   font-size: 18px;
   color: var(--primary);
@@ -244,7 +234,10 @@
 /* ================= MODAL ================= */
 .modal-overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(15,23,42,.55);
   backdrop-filter: blur(6px);
   display: flex;
@@ -258,47 +251,47 @@
 .modal-box {
   background: white;
   padding: 26px;
-  border-radius: 18px;
-  width: 92%;
-  max-width: 520px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.25);
-  animation: scaleIn .25s ease;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 90%;
+  max-height: 80vh;        /* ✅ limite la hauteur */
+  overflow-y: auto;        /* ✅ scroll interne si besoin */
+  direction: rtl;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  position: relative;
 }
 
-@keyframes scaleIn {
-  from { transform: scale(.95); opacity: 0 }
-  to { transform: scale(1); opacity: 1 }
-}
+
 
 .modal-box h3 {
   margin-top: 0;
   margin-bottom: 18px;
-  color: var(--primary);
-  font-weight: 700;
+  font-size: 1.4em;
+  color: #1e3a8a;
+  text-align: center;
 }
 
-.modal-form {
-  display: grid;
-  gap: 14px;
-}
+
 
 .modal-form input,
 .modal-form select,
 .modal-form textarea {
   padding: 12px;
-  font-size: 14px;
+  font-size: 1em;
   border-radius: 10px;
-  border: 1px solid var(--border-soft);
-  transition: border .2s, box-shadow .2s;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .modal-form input:focus,
 .modal-form select:focus,
 .modal-form textarea:focus {
   outline: none;
-  border-color: var(--primary-light);
-  box-shadow: 0 0 0 3px rgba(79,70,229,.15);
+  border-color: #3b82f6;
+  box-shadow: 0 0 5px rgba(59,130,246,0.5);
 }
+
+/* ===== MODAL ACTIONS ===== */
 
 .modal-actions {
   display: flex;

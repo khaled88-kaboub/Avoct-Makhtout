@@ -298,6 +298,7 @@ export default function AudiencesPage() {
             <h3>{editId ? "تعديل جلسة" : "إضافة جلسة"}</h3>
 
             <form onSubmit={handleSubmit}>
+            <label className="police">الملف</label>
   <select name="dossier" value={form.dossier} onChange={handleChange} required>
     <option value="">اختر ملف (اسم العميل) </option>
     {dossiers.map((d) => (
@@ -306,7 +307,7 @@ export default function AudiencesPage() {
       </option>
     ))}
   </select>
-
+  <label  className="police">تاريخ الجلسة</label>
   <input
   type="date"
   name="dateAudience"
@@ -314,7 +315,7 @@ export default function AudiencesPage() {
   onChange={handleChange}
   required
 />
-
+<label  className="police">توقيت الجلسة</label>
 <input
   type="time"
   name="heureAudience"
@@ -324,35 +325,36 @@ export default function AudiencesPage() {
 />
 
 
-
+<label  className="police">  نوع الجلسة</label>
   <select
     name="typeAudience"
     value={form.typeAudience}
     onChange={handleChange}
     required
   >
-    <option value="">نوع الجلسة</option>
+    <option value=""> </option>
     {typesAudience.map((t) => (
       <option key={t._id} value={t._id}>
         {t.nom}
       </option>
     ))}
   </select>
-
+  <label  className="police">حالة الجلسة </label>
   <select name="statut" value={form.statut} onChange={handleChange}>
     <option value="مجدولة">مجدولة</option>
     <option value="مؤجلة">مؤجلة</option>
     <option value="منتهية">منتهية</option>
     <option value="ملغاة">ملغاة</option>
   </select>
-
+  <label  className="police">ملاحظات</label>
   <textarea
     name="notes"
     placeholder="ملاحظات"
     value={form.notes}
     onChange={handleChange}
   />
-
+<label  className="police">   قرار/منطوق الحكم
+</label>
   <textarea
     name="decision"
     placeholder="القرار / منطوق الحكم"

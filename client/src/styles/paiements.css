@@ -35,6 +35,28 @@
 .btn-add:hover {
   background-color: #374ac0;
 }
+
+/* ===== FILTERS BOX ===== */
+.filters-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.filters-box input,
+.filters-box select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e0;
+}
+
+.result-count {
+  font-weight: 600;
+  color: #1e3a8a;
+  margin-left: auto;
+}
 /* ===== MODAL OVERLAY ===== */
 .modal-overlay {
   position: fixed;
@@ -52,7 +74,7 @@
 /* ===== MODAL BOX ===== */
 .modal-box {
   background-color: #fff;
-  padding: 25px 30px;
+  padding: 26px ;
   border-radius: 10px;
   width: 400px;
   max-width: 90%;
@@ -193,24 +215,4 @@
   background-color: #059669;
 }
 
-/* ===== FILTERS BOX ===== */
-.filters-box {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: 10px;
-}
 
-.filters-box input,
-.filters-box select {
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid #cbd5e0;
-}
-
-.result-count {
-  font-weight: 600;
-  color: #1e3a8a;
-  margin-left: auto;
-}
