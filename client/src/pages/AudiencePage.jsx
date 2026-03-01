@@ -208,6 +208,7 @@ export default function AudiencesPage() {
 
     <h4><strong>{a.dossier?.titre}</strong></h4>
     <p>📁 <strong>{a.dossier?.reference}</strong></p>
+    <p>📁 رقم القضية : <strong>{a.dossier?.numero}</strong></p>
     <p>👤 {a.dossier?.client?.noms?.join(" ، ")}</p>
     <p>
   ⏰{" "}
@@ -233,6 +234,17 @@ export default function AudiencesPage() {
     </p>
     )}
 
+{a.dossier?.juridictionType === "tribunal" && a.dossier?.tribunal && (
+    <p>
+    ⚖️ القسم :
+    <strong>
+      {" "}
+      
+      {a.dossier.classe.nom}
+    </strong>
+    </p>
+    )}
+
    {a.dossier?.juridictionType === "court" && a.dossier?.court && (
    <p>
     ⚖️ المجلس :
@@ -244,6 +256,15 @@ export default function AudiencesPage() {
     </p>
    )}
 
+{a.dossier?.juridictionType === "court" && a.dossier?.court && (
+   <p>
+    ⚖️ الغرفة :
+    <strong>
+      
+      {a.dossier.chambre.nom}
+    </strong>
+    </p>
+   )}
 
   <p>
     🚪 القاعة : <strong>{a.dossier.salle}</strong>

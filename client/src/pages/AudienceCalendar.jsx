@@ -80,9 +80,14 @@ export default function AudienceCalendar() {
       <h3>📌 تفاصيل الجلسة</h3>
 
       <p>
-        <strong>📁 الملف:</strong> {selectedAudience.dossier?.titre}
+      <strong>{selectedAudience.dossier?.reference}</strong>
       </p>
-
+      <p>
+      <strong>📁 {selectedAudience.dossier?.titre}</strong>  
+      </p>
+      <p>
+        <strong>📁 رقم القضية :</strong> {selectedAudience.dossier?.numero}
+      </p>
       <p>
         <strong>👤 العميل:</strong>{" "}
         {selectedAudience.dossier?.client?.noms?.join(" ، ")}
