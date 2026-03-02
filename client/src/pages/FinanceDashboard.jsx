@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { FaFileInvoiceDollar } from "react-icons/fa"; // Nouvelle icône pour le tableau
 
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -30,6 +31,7 @@ export default function FinanceDashboard() {
   const [data, setData] = useState(null);
   const [year, setYear] = useState(new Date().getFullYear());
   const [sortOrder, setSortOrder] = useState("asc");
+  const [financeSummary, setFinanceSummary] = useState([]); // Nouvel état
   useEffect(() => {
     fetchData();
   }, [year]);

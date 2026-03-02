@@ -160,3 +160,46 @@ export const getMonthlyFinanceStats = async (req, res) => {
     res.status(500).json({ message: "Erreur stats mensuelles", err });
   }
 };
+
+/* ================= DOSSIERS FINANCE SUMMARY ================= */
+export const getDossiersFinanceSummary = async (req, res) => {
+  try {
+    const { onlyDebts } = req.query; // On récupère le filtre si présent
+
+    const dossiers = await Dossier.find().populate("client", "noms").select("titre price client");
+    const paiements = await Paiement.find().select("dossier montant");
+
+    let summary = dossiers.map(d => {
+      const totalPaye = paiements
+        .filter(p => p.dossier?.toString() === d._id.toString())
+        .reduce((sum, p) => sum + p.montant, 0);
+
+      const prixDossier = d.price || 0;
+      return {
+        _id: d._id,
+        titre: d.titre,
+        client: d.client?.noms?.join(" ، ") || "غير معروف",
+        prix: prixDossier,
+        paye: totalPaye,
+        dette: prixDossier - totalPaye
+      };
+    });
+
+    // Appliquer le filtre si demandé
+    if (onlyDebts === "true") {
+      summary = summary.filter(item => item.dette > 0);
+    }
+
+    // Calculer les totaux globaux pour la ligne du bas
+    const totals = summary.reduce((acc, curr) => {
+      acc.totalPrix += curr.prix;
+      acc.totalPaye += curr.paye;
+      acc.totalDette += curr.dette;
+      return acc;
+    }, { totalPrix: 0, totalPaye: 0, totalDette: 0 });
+
+    res.json({ data: summary, totals });
+  } catch (err) {
+    res.status(500).json({ message: "Erreur résumé financier", err });
+  }
+};
