@@ -57,12 +57,12 @@ export default function AudienceCalendar() {
 
       <FullCalendar
   plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-  initialView="dayGridMonth"
+  initialView={window.innerWidth < 768 ? "timeGridDay" : "dayGridMonth"} // تغيير العرض الافتراضي للجوال
   locale="ar"
   headerToolbar={{
     right: "prev,next today",
     center: "title",
-    left: "dayGridMonth,timeGridWeek,timeGridDay",
+    left: window.innerWidth < 768 ? "dayGridMonth,timeGridDay" : "dayGridMonth,timeGridWeek,timeGridDay",
   }}
   events={events}
   eventClick={handleEventClick}
@@ -72,6 +72,9 @@ export default function AudienceCalendar() {
     hour12: false,
   }}
   height="auto"
+  stickyHeaderDates={true} // لتثبيت التاريخ عند التمرير
+  handleWindowResize={true}
+  expandRows={true}
 />
 
       {showModal && selectedAudience && (

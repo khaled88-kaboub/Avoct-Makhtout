@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
 .calendar-page {
-    padding: 25px;
+    padding: 10px;
     background: #f3f4f6;
     min-height: 100vh;
     font-family: "Poppins", sans-serif;
@@ -20,6 +20,7 @@
     border-radius: 12px;
     padding: 15px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    font-size: 0.9rem;
   }
   
   .fc-toolbar-title {
@@ -33,7 +34,12 @@
     border-radius: 6px !important;
   }
   .fc-event-title { 
-    white-space: pre-wrap !important; 
+    white-space: pre-wrap !important;
+    
+      font-size: 0.75rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+  
  }
   .fc-button:hover {
     background: #bec037 !important;
@@ -88,3 +94,20 @@
     to { transform: scale(1); opacity: 1 }
   }
   
+
+  /* تحسين شريط الأدوات (Toolbar) في الموبايل */
+@media (max-width: 768px) {
+  .fc .fc-toolbar {
+      flex-direction: column;
+      gap: 10px;
+  }
+  
+  .fc-toolbar-title {
+      font-size: 1.1rem !important;
+  }
+
+  .fc .fc-button {
+      padding: 0.4em 0.6em !important;
+      font-size: 1.0rem !important;
+  }
+}
