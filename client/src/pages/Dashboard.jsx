@@ -7,6 +7,7 @@ import {
     FaMoneyBillWave,
     FaUsers,
     FaPlus,
+    FaTimes,
     FaChartLine
 } from "react-icons/fa";
 
@@ -20,6 +21,7 @@ export default function Dashboard() {
   const [paiements, setPaiements] = useState([]);
   const [paiements1, setPaiements1] = useState([]);
   const [paiements2, setPaiements2] = useState([]);
+  const [showFinanceModal, setShowFinanceModal] = useState(false);
   const [financeSummary, setFinanceSummary] = useState([]);
   const [financeData, setFinanceData] = useState({ data: [], totals: {} });
   const [showOnlyDebts, setShowOnlyDebts] = useState(false);
@@ -142,75 +144,8 @@ const exportToExcel = () => {
        
       </div>
 
-{/* ===== TABLEAU RÉSUMÉ FINANCIER ===== */}
-<div className="dashboard-box full-width">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h3><FaFileInvoiceDollar /> ملخص المستحقات المالية</h3>
-          <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
-          <button 
-            onClick={exportToExcel}
-            className="btn-export-excel"
-            style={{ 
-                backgroundColor: "#27ae60", 
-                color: "white", 
-                border: "none", 
-                padding: "5px 15px", 
-                borderRadius: "5px",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px"
-            }}
-        >
-            📥 تصدير Excel
-        </button>
-          <label className="filter-label">
-            <input 
-              type="checkbox" 
-              checked={showOnlyDebts} 
-              onChange={() => setShowOnlyDebts(!showOnlyDebts)} 
-            />
-            عرض الديون فقط
-          </label>
-        </div>
-        </div>
-        <div className="table-responsive">
-          <table className="summary-table">
-            <thead>
-              <tr>
-                <th>الملف</th>
-                <th>الموكل</th>
-                <th>الأتعاب</th>
-                <th>المدفوع</th>
-                <th>الباقي</th>
-              </tr>
-            </thead>
-            <tbody>
-              {financeData.data.map(item => (
-                <tr key={item._id}>
-                  <td>{item.titre}</td>
-                  <td>{item.client}</td>
-                  <td>{item.prix.toLocaleString()} دج</td>
-                  <td className="txt-green">{item.paye.toLocaleString()} دج</td>
-                  <td className={item.dette > 0 ? "txt-red" : "txt-green"}>
-                    {item.dette.toLocaleString()} {item.dette > 0 ? "دج" : "✓"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-            {/* LIGNE DES TOTAUX */}
-            <tfoot className="table-footer">
-              <tr>
-                <td colSpan="2">الإجمالي العام</td>
-                <td>{financeData.totals.totalPrix?.toLocaleString()} دج</td>
-                <td className="txt-green">{financeData.totals.totalPaye?.toLocaleString()} دج</td>
-                <td className="txt-red" style={{fontSize: '1.2rem'}}>{financeData.totals.totalDette?.toLocaleString()} دج</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </div>
-  
+
+    
       {/* ===== LISTS ===== */}
       <div className="dashboard-grid">
         <div className="dashboard-box">
@@ -241,11 +176,116 @@ const exportToExcel = () => {
         
       </div>
       <div className="quick-actions">
-          
-          <button onClick={() => navigate("/financial")}>
-  <FaChartLine /> تقرير مالي
-</button>
+    <button onClick={() => navigate("/financial")}>
+        <FaChartLine />
+        تقرير مالي
+    </button>
+
+    <button onClick={() => setShowFinanceModal(true)}>
+        <FaFileInvoiceDollar />
+        ديون و مستحقات
+    </button>
+</div>
+
+
+        {showFinanceModal && (
+    <div
+        className="modal-overlay"
+        onClick={() => setShowFinanceModal(false)}
+    >
+        <div
+            className="modal-content finance-modal"
+            onClick={(e) => e.stopPropagation()}
+        >
+
+            <div className="modal-header">
+                <h3>
+                    <FaFileInvoiceDollar /> ملخص المستحقات المالية
+                </h3>
+
+                <button
+                    className="closed-btn"
+                    onClick={() => setShowFinanceModal(false)}
+                >
+                    <FaTimes />
+                </button>
+            </div>
+
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginBottom: "15px"
+                }}
+            >
+                <button
+                    onClick={exportToExcel}
+                    className="btn-export-excel"
+                >
+                    📥 تصدير Excel
+                </button>
+
+                <label className="filter-label">
+                    <input
+                        type="checkbox"
+                        checked={showOnlyDebts}
+                        onChange={() => setShowOnlyDebts(!showOnlyDebts)}
+                    />
+                    عرض الديون فقط
+                </label>
+            </div>
+
+            <div className="table-responsive">
+
+                <table className="summary-table">
+
+                    <thead>
+                        <tr>
+                            <th>الملف</th>
+                            <th>الموكل</th>
+                            <th>الأتعاب</th>
+                            <th>المدفوع</th>
+                            <th>الباقي</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {financeData.data.map(item => (
+                            <tr key={item._id}>
+                                <td>{item.titre}</td>
+                                <td>{item.client}</td>
+                                <td>{item.prix.toLocaleString()} دج</td>
+                                <td className="txt-green">
+                                    {item.paye.toLocaleString()} دج
+                                </td>
+                                <td className={item.dette > 0 ? "txt-red" : "txt-green"}>
+                                    {item.dette.toLocaleString()}
+                                    {item.dette > 0 ? " دج" : " ✓"}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+
+                    <tfoot className="table-footer">
+                        <tr>
+                            <td colSpan="2">الإجمالي العام</td>
+                            <td>{financeData.totals.totalPrix?.toLocaleString()} دج</td>
+                            <td className="txt-green">
+                                {financeData.totals.totalPaye?.toLocaleString()} دج
+                            </td>
+                            <td className="txt-red">
+                                {financeData.totals.totalDette?.toLocaleString()} دج
+                            </td>
+                        </tr>
+                    </tfoot>
+
+                </table>
+
+            </div>
+
         </div>
+    </div>
+)}
     </div>
     
   );

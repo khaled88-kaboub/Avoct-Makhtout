@@ -4,78 +4,93 @@ import "../styles/audiences.css";
 
 const today = () => new Date().toISOString().slice(0, 10);
 
-
 export default function AudiencesPage() {
   const [audiences, setAudiences] = useState([]);
   const [dossiers, setDossiers] = useState([]);
   const [typesAudience, setTypesAudience] = useState([]);
   const [filterDate, setFilterDate] = useState(today());
 
-
   const API_URL = import.meta.env.VITE_API_URL;
-  /* ===== filters ===== */
+
+  /* ===== filters (الصفحة الرئيسية) ===== */
   const [filterStatut, setFilterStatut] = useState("");
   const [filterType, setFilterType] = useState("");
 
   /* ===== modal ===== */
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
+  
+  // 👈 1. حالة البحث عن الملفات داخل المودال
+  const [dossierSearch, setDossierSearch] = useState("");
 
   const [form, setForm] = useState({
     dossier: "",
     dateAudience: "",
+    heureAudience: "",
     typeAudience: "",
     notes: "",
     decision: "",
     statut: "مجدولة",
   });
-  
 
   /* ================= FETCH ================= */
   const loadData = async () => {
-    const [aRes, dRes, tRes] = await Promise.all([
-      axios.get(`${API_URL}/api/audiences`),
-      axios.get(`${API_URL}/api/dossiers`),
-      axios.get(`${API_URL}/api/typeAudiences`),
-    ]);
-  
-    setAudiences(aRes.data || []);
-    setDossiers(dRes.data || []);
-    setTypesAudience(tRes.data || []);
+    try {
+      const [aRes, dRes, tRes] = await Promise.all([
+        axios.get(`${API_URL}/api/audiences`),
+        axios.get(`${API_URL}/api/dossiers`),
+        axios.get(`${API_URL}/api/typeAudiences`),
+      ]);
+
+      setAudiences(Array.isArray(aRes.data) ? aRes.data : []);
+      setDossiers(Array.isArray(dRes.data) ? dRes.data : []);
+      setTypesAudience(Array.isArray(tRes.data) ? tRes.data : []);
+    } catch (error) {
+      console.error("Erreur lors du chargement des données", error);
+    }
   };
-  
 
   useEffect(() => {
     loadData();
-  }, []);
-  useEffect(() => {
     document.title = "قائمة الجلسات";
   }, []);
-  /* ================= FILTER ================= */
+
+  /* ================= FILTER AUDIENCES (الصفحة) ================= */
   const filteredAudiences = audiences.filter((a) => {
-    const matchStatut =
-      !filterStatut || a.statut === filterStatut;
-  
-    const matchType =
-      !filterType || a.typeAudience?._id === filterType;
-  
+    const matchStatut = !filterStatut || a.statut === filterStatut;
+    const matchType = !filterType || a.typeAudience?._id === filterType;
     const matchDate =
       !filterDate ||
-      new Date(a.dateAudience).toISOString().slice(0, 10) ===
-        filterDate;
-  
+      (a.dateAudience &&
+        new Date(a.dateAudience).toISOString().slice(0, 10) === filterDate);
+
     return matchStatut && matchType && matchDate;
   });
-  
-  
+
+  /* ================= FILTER DOSSIERS (المودال) ================= */
+  // 👈 2. تصفية الملفات حسب عنوان القضية أو أسماء العماء
+  const filteredDossiers = dossiers.filter((d) => {
+    if (!dossierSearch.trim()) return true;
+
+    const query = dossierSearch.toLowerCase();
+    const matchTitre = d.titre?.toLowerCase().includes(query);
+    const matchRef = d.reference?.toLowerCase().includes(query);
+    const matchNumero = d.numero?.toLowerCase().includes(query);
+    const matchClient = d.client?.noms?.some((nom) =>
+      nom.toLowerCase().includes(query)
+    );
+
+    return matchTitre || matchRef || matchNumero || matchClient;
+  });
 
   /* ================= HANDLERS ================= */
   const openAdd = () => {
     setEditId(null);
+    setDossierSearch(""); // إعادة ضبط البحث عند فتح المودال
     setForm({
       dossier: "",
       dateAudience: "",
-      heureAudience: "",   // 👈 جديد
+      heureAudience: "",
       typeAudience: "",
       notes: "",
       decision: "",
@@ -83,12 +98,12 @@ export default function AudiencesPage() {
     });
     setShowModal(true);
   };
-  
 
   const openEdit = (a) => {
     const d = a.dateAudience ? new Date(a.dateAudience) : null;
-  
+
     setEditId(a._id);
+    setDossierSearch(""); // إعادة ضبط البحث
     setForm({
       dossier: a.dossier?._id || "",
       dateAudience: d ? d.toISOString().slice(0, 10) : "",
@@ -100,62 +115,68 @@ export default function AudiencesPage() {
     });
     setShowModal(true);
   };
-  
-  
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-    
-      if (!form.dateAudience || !form.heureAudience) return;
-    
-      const dateTime = new Date(
-        `${form.dateAudience}T${form.heureAudience}:00`
-      );
-    
-      const payload = {
-        dossier: form.dossier,
-        dateAudience: dateTime, // ✅ تاريخ + ساعة
-        typeAudience: form.typeAudience,
-        notes: form.notes,
-        decision: form.decision,
-        statut: form.statut,
-      };
-    
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!form.dateAudience || !form.heureAudience) return;
+
+    const dateTime = new Date(
+      `${form.dateAudience}T${form.heureAudience}:00`
+    );
+
+    const payload = {
+      dossier: form.dossier,
+      dateAudience: dateTime,
+      typeAudience: form.typeAudience,
+      notes: form.notes,
+      decision: form.decision,
+      statut: form.statut,
+    };
+
+    try {
       if (editId) {
         await axios.put(`${API_URL}/api/audiences/${editId}`, payload);
       } else {
         await axios.post(`${API_URL}/api/audiences`, payload);
       }
-    
+
       setShowModal(false);
       loadData();
-    };
-    
+    } catch (error) {
+      console.error("Erreur lors لإنشاء/تعديل الجلسة", error);
+    }
+  };
 
   const handleDelete = async (id) => {
     if (!window.confirm("حذف الجلسة؟")) return;
-    await axios.delete(`${API_URL}/api/audiences/${id}`);
-    loadData();
+    try {
+      await axios.delete(`${API_URL}/api/audiences/${id}`);
+      loadData();
+    } catch (error) {
+      console.error("Erreur lors de la suppression", error);
+    }
   };
 
-  
   /* ================= UI ================= */
   return (
     <div className="audience-page" dir="rtl">
       <div className="page-header">
         <h2>⚖️ الجلسات</h2>
-        <button className="btn-add" onClick={openAdd}>➕ جلسة جديدة</button>
+        <button className="btn-add" onClick={openAdd}>
+          ➕ جلسة جديدة
+        </button>
       </div>
 
       {/* ===== Filters ===== */}
       <div className="filters-bar">
         <select
-        value={filterStatut}
-        onChange={(e) => setFilterStatut(e.target.value)}>
-        
+          value={filterStatut}
+          onChange={(e) => setFilterStatut(e.target.value)}
+        >
           <option value="">كل الحالات</option>
           <option value="مجدولة">مجدولة</option>
           <option value="مؤجلة">مؤجلة</option>
@@ -163,133 +184,120 @@ export default function AudiencesPage() {
           <option value="ملغاة">ملغاة</option>
         </select>
 
-        <select 
-        value={filterType}
-        onChange={(e) => setFilterType(e.target.value)}>
-        
-        <option value="">كل الأنواع</option>
-           {typesAudience.map((t) => (
-        <option key={t._id} value={t._id}>
-        {t.nom}
-        </option>
-        ))}
+        <select
+          value={filterType}
+          onChange={(e) => setFilterType(e.target.value)}
+        >
+          <option value="">كل الأنواع</option>
+          {typesAudience.map((t) => (
+            <option key={t._id} value={t._id}>
+              {t.nom}
+            </option>
+          ))}
         </select>
 
         <input
-        type="date"
-        value={filterDate}
-        onChange={(e) => setFilterDate(e.target.value)}
+          type="date"
+          value={filterDate}
+          onChange={(e) => setFilterDate(e.target.value)}
         />
 
-
-<button
-  onClick={() => {
-    setFilterStatut("");
-    setFilterType("");
-    setFilterDate("");
-  }}
->
-  مسح الفلاتر
-</button>
-
+        <button
+          onClick={() => {
+            setFilterStatut("");
+            setFilterType("");
+            setFilterDate("");
+          }}
+        >
+          مسح الفلاتر
+        </button>
       </div>
 
       <hr className="separator" />
       <div className="filters-separator">
-  <span>
-    نتائج الجلسات ({filteredAudiences.length})
-  </span>
-</div>
+        <span>نتائج الجلسات ({filteredAudiences.length})</span>
+      </div>
+
       {/* ===== Cards ===== */}
       <div className="audience-cards">
-      {filteredAudiences.map((a) => (
-  <div className="audience-card" key={a._id}>
-    <span className={`badge ${a.statut}`}>{a.statut}</span>
+        {filteredAudiences.map((a) => (
+          <div className="audience-card" key={a._id}>
+            <span className={`badge ${a.statut}`}>{a.statut}</span>
 
-    <h4><strong>{a.dossier?.titre}</strong></h4>
-    <p>📁 <strong>{a.dossier?.reference}</strong></p>
-    <p>📁 رقم القضية : <strong>{a.dossier?.numero}</strong></p>
-    <p>👤 {a.dossier?.client?.noms?.join(" ، ")}</p>
-    <p>
-  ⏰{" "}
-  <strong>{new Date(a.dateAudience).toLocaleTimeString("ar-DZ", {
-    hour: "2-digit",
-    minute: "2-digit",
-  })}</strong>{" "}
-  | 📅{" "}
-  {new Date(a.dateAudience).toLocaleDateString("ar-DZ")}
-</p>
+            <h4>
+              <strong>{a.dossier?.titre}</strong>
+            </h4>
+            <p>
+              📁 <strong>{a.dossier?.reference}</strong>
+            </p>
+            <p>
+              📁 رقم القضية : <strong>{a.dossier?.numero}</strong>
+            </p>
+            <p>👤 {a.dossier?.client?.noms?.join(" ، ")}</p>
+            <p>
+              ⏰{" "}
+              <strong>
+                {a.dateAudience
+                  ? new Date(a.dateAudience).toLocaleTimeString("ar-DZ", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : "-"}
+              </strong>{" "}
+              | 📅{" "}
+              {a.dateAudience
+                ? new Date(a.dateAudience).toLocaleDateString("ar-DZ")
+                : "-"}
+            </p>
 
+            {/* ===== Juridiction ===== */}
+            {a.dossier?.juridictionType === "tribunal" &&
+              a.dossier?.tribunal && (
+                <p>
+                  ⚖️ المحكمة : <strong>{a.dossier.tribunal.nom}</strong>
+                </p>
+              )}
 
+            {a.dossier?.juridictionType === "tribunal" &&
+              a.dossier?.classe && (
+                <p>
+                  ⚖️ القسم : <strong>{a.dossier.classe.nom}</strong>
+                </p>
+              )}
 
-    {/* ===== Juridiction ===== */}
-    {a.dossier?.juridictionType === "tribunal" && a.dossier?.tribunal && (
-    <p>
-    ⚖️ المحكمة :
-    <strong>
-      {" "}
-      
-      {a.dossier.tribunal.nom}
-    </strong>
-    </p>
-    )}
+            {a.dossier?.juridictionType === "court" && a.dossier?.court && (
+              <p>
+                ⚖️ المجلس :{" "}
+                <strong>
+                  ({String(a.dossier.court.wilayaNumber).padStart(2, "0")}){" "}
+                  {a.dossier.court.nom}
+                </strong>
+              </p>
+            )}
 
-{a.dossier?.juridictionType === "tribunal" && a.dossier?.tribunal && (
-    <p>
-    ⚖️ القسم :
-    <strong>
-      {" "}
-      
-      {a.dossier.classe.nom}
-    </strong>
-    </p>
-    )}
+            {a.dossier?.juridictionType === "court" && a.dossier?.chambre && (
+              <p>
+                ⚖️ الغرفة : <strong>{a.dossier.chambre.nom}</strong>
+              </p>
+            )}
 
-   {a.dossier?.juridictionType === "court" && a.dossier?.court && (
-   <p>
-    ⚖️ المجلس :
-    <strong>
-      {" "}
-      ({String(a.dossier.court.wilayaNumber).padStart(2, "0")}){" "}
-      {a.dossier.court.nom}
-    </strong>
-    </p>
-   )}
+            {a.dossier?.salle && (
+              <p>
+                🚪 القاعة : <strong>{a.dossier.salle}</strong>
+              </p>
+            )}
 
-{a.dossier?.juridictionType === "court" && a.dossier?.court && (
-   <p>
-    ⚖️ الغرفة :
-    <strong>
-      
-      {a.dossier.chambre.nom}
-    </strong>
-    </p>
-   )}
+            {a.notes && <p>📝 ملاحظات: {a.notes}</p>}
 
-  <p>
-    🚪 القاعة : <strong>{a.dossier.salle}</strong>
-  </p>
+            {a.decision && <p>⚖️ منطوق الحكم: {a.decision}</p>}
 
-
-  {a.notes &&
-    <p>  📝 
-    ملاحظات: 
-    {a.notes}</p>
-}
-
-    {a.decision && 
-    <p>⚖️ 
-      منطوق الحكم:
-      {a.decision}</p>}
-
-    <div className="card-actions">
-      <button onClick={() => openEdit(a)}>تعديل</button>
-      <button onClick={() => handleDelete(a._id)}>حذف</button>
-    </div>
-  </div>
-))}
-</div>
-
+            <div className="card-actions">
+              <button onClick={() => openEdit(a)}>تعديل</button>
+              <button onClick={() => handleDelete(a._id)}>حذف</button>
+            </div>
+          </div>
+        ))}
+      </div>
 
       {/* ===== Modal ===== */}
       {showModal && (
@@ -298,78 +306,101 @@ export default function AudiencesPage() {
             <h3>{editId ? "تعديل جلسة" : "إضافة جلسة"}</h3>
 
             <form onSubmit={handleSubmit}>
-            <label className="police">الملف</label>
-  <select name="dossier" value={form.dossier} onChange={handleChange} required>
-    <option value="">اختر ملف (اسم العميل) </option>
-    {dossiers.map((d) => (
-      <option key={d._id} value={d._id}>
-        {d.titre} ({d.client?.noms.join(" -- ")})
-      </option>
-    ))}
-  </select>
-  <label  className="police">تاريخ الجلسة</label>
-  <input
-  type="date"
-  name="dateAudience"
-  value={form.dateAudience || ""}
-  onChange={handleChange}
-  required
-/>
-<label  className="police">توقيت الجلسة</label>
-<input
-  type="time"
-  name="heureAudience"
-  value={form.heureAudience || ""}
-  onChange={handleChange}
-  required
-/>
+              <label className="police">البحث عن ملف أو موكل</label>
+              {/* 👈 3. حقل البحث داخل المودال */}
+              <input
+                type="text"
+                placeholder="🔍 اكتب اسم القضية أو العميل للتصفية..."
+                value={dossierSearch}
+                onChange={(e) => setDossierSearch(e.target.value)}
+                style={{ marginBottom: "10px" }}
+              />
 
+              <label className="police">الملف</label>
+              <select
+                name="dossier"
+                value={form.dossier}
+                onChange={handleChange}
+                required
+              >
+                <option value="">اختر ملف (اسم العميل)</option>
+                {filteredDossiers.map((d) => (
+                  <option key={d._id} value={d._id}>
+                    {d.titre} {d.client?.noms ? `(${d.client.noms.join(" -- ")})` : ""}
+                  </option>
+                ))}
+              </select>
 
-<label  className="police">  نوع الجلسة</label>
-  <select
-    name="typeAudience"
-    value={form.typeAudience}
-    onChange={handleChange}
-    required
-  >
-    <option value=""> </option>
-    {typesAudience.map((t) => (
-      <option key={t._id} value={t._id}>
-        {t.nom}
-      </option>
-    ))}
-  </select>
-  <label  className="police">حالة الجلسة </label>
-  <select name="statut" value={form.statut} onChange={handleChange}>
-    <option value="مجدولة">مجدولة</option>
-    <option value="مؤجلة">مؤجلة</option>
-    <option value="منتهية">منتهية</option>
-    <option value="ملغاة">ملغاة</option>
-  </select>
-  <label  className="police">ملاحظات</label>
-  <textarea
-    name="notes"
-    placeholder="ملاحظات"
-    value={form.notes}
-    onChange={handleChange}
-  />
-<label  className="police">   قرار/منطوق الحكم
-</label>
-  <textarea
-    name="decision"
-    placeholder="القرار / منطوق الحكم"
-    value={form.decision}
-    onChange={handleChange}
-  />
+              <label className="police">تاريخ الجلسة</label>
+              <input
+                type="date"
+                name="dateAudience"
+                value={form.dateAudience || ""}
+                onChange={handleChange}
+                required
+              />
 
-  <div className="modal-actions">
-    <button className="btn-primary">حفظ</button>
-    <button type="button" onClick={() => setShowModal(false)}>
-      إلغاء
-    </button>
-  </div>
-</form>
+              <label className="police">توقيت الجلسة</label>
+              <input
+                type="time"
+                name="heureAudience"
+                value={form.heureAudience || ""}
+                onChange={handleChange}
+                required
+              />
 
+              <label className="police">نوع الجلسة</label>
+              <select
+                name="typeAudience"
+                value={form.typeAudience}
+                onChange={handleChange}
+                required
+              >
+                <option value="">اختر نوع الجلسة</option>
+                {typesAudience.map((t) => (
+                  <option key={t._id} value={t._id}>
+                    {t.nom}
+                  </option>
+                ))}
+              </select>
+
+              <label className="police">حالة الجلسة</label>
+              <select
+                name="statut"
+                value={form.statut}
+                onChange={handleChange}
+              >
+                <option value="مجدولة">مجدولة</option>
+                <option value="مؤجلة">مؤجلة</option>
+                <option value="منتهية">منتهية</option>
+                <option value="ملغاة">ملغاة</option>
+              </select>
+
+              <label className="police">ملاحظات</label>
+              <textarea
+                name="notes"
+                placeholder="ملاحظات"
+                value={form.notes}
+                onChange={handleChange}
+              />
+
+              <label className="police">قرار/منطوق الحكم</label>
+              <textarea
+                name="decision"
+                placeholder="القرار / منطوق الحكم"
+                value={form.decision}
+                onChange={handleChange}
+              />
+
+              <div className="modal-actions">
+                <button type="submit" className="btn-primary">
+                  حفظ
+                </button>
+                <button type="button" onClick={() => setShowModal(false)}>
+                  إلغاء
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

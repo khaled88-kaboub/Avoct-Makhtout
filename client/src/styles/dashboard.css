@@ -150,27 +150,77 @@
   .quick-actions {
     margin-top: 30px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-  }
-  
-  .quick-actions button {
-    background-color: #1e3a8a;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 16px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
+    justify-content: center;   /* Centre les boutons */
     align-items: center;
-    gap: 8px;
-  }
+    gap: 20px;                 /* Espace entre eux */
+    flex-wrap: wrap;
+}
   
-  .quick-actions button:hover {
-    background-color: #374ac0;
-  }
+.quick-actions button {
+  min-width: 220px;
+  background-color: #1e3a8a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  transition: .3s;
+}
+
+.quick-actions button:hover{
+  background:#374ac0;
+  transform: translateY(-2px);
+}
   
+
+  .modal-overlay{
+    position: fixed;
+    inset:0;
+    background: rgba(0,0,0,.55);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+.finance-modal{
+    background:white;
+    width:95%;
+    max-width:1200px;
+    max-height:90vh;
+    overflow:auto;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.close-btn{
+    border:none;
+    background:#e74c3c;
+    color:white;
+    width:38px;
+    height:38px;
+    border-radius:10%;
+    cursor:pointer;
+    font-size:18px;
+    
+}
+
+.close-btn:hover{
+    background:#c0392b;
+}
   /* ================= RESPONSIVE ================= */
 
 /* --- Tablettes et écrans moyens (moins de 1024px) --- */
